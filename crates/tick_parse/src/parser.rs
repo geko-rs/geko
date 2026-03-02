@@ -1,5 +1,7 @@
 /// Import
 use crate::errors::ParseError;
+use miette::NamedSource;
+use std::sync::Arc;
 use tick_ast::{
     atom::{AssignOp, BinaryOp, Function, Lit, UnaryOp},
     expr::{Expression, Range},
@@ -10,8 +12,6 @@ use tick_lex::{
     lexer::Lexer,
     token::{Span, Token, TokenKind},
 };
-use miette::NamedSource;
-use std::sync::Arc;
 
 /// Parser converts a stream of tokens
 /// produced by the lexer into an abstract syntax tree (AST).
@@ -550,6 +550,45 @@ impl<'s> Parser<'s> {
         }
     }
 
+    /// Anonymous function parsing
+    fn anon_fn(&mut self) -> Expression {
+        let start_span = self.peek().span.clone();
+
+        // Parsing function params
+        let params = if self.check(TokenKind::Bar) {
+            self.sep_by(TokenKind::Bar, TokenKind::Bar, TokenKind::Comma, |p| {
+                p.param()
+            })
+        } else {
+            self.expect(TokenKind::DoubleBar);
+            Vec::new()
+        };
+
+        // Parsing function body
+        let block = if self.check(TokenKind::Lbrace) {
+            self.block()
+        } else {
+            let start_span = self.peek().span.clone();
+            let expr = self.expr();
+            let end_span = self.prev().span.clone();
+
+            Block {
+                span: start_span.clone() + end_span.clone(),
+                statements: vec![Statement::Return {
+                    span: start_span + end_span,
+                    expr: Some(expr),
+                }],
+            }
+        };
+
+        let end_span = self.prev().span.clone();
+        Expression::Fn {
+            span: start_span + end_span,
+            params,
+            block,
+        }
+    }
+
     /// Atom expression parsing
     fn atom(&mut self) -> Expression {
         let tk = self.peek().clone();
@@ -589,6 +628,7 @@ impl<'s> Parser<'s> {
             }
             TokenKind::Id => self.variable(),
             TokenKind::Lbracket => self.list(),
+            TokenKind::Bar | TokenKind::DoubleBar => self.anon_fn(),
             _ => bail!(ParseError::UnexpectedExprToken {
                 got: tk.kind,
                 src: self.source.clone(),
@@ -715,8 +755,8 @@ impl<'s> Parser<'s> {
         left
     }
 
-    /// `tickwise and` expression parsing
-    fn tickwise_and_expr(&mut self) -> Expression {
+    /// `bitwise and` expression parsing
+    fn bitwise_and_expr(&mut self) -> Expression {
         let start_span = self.peek().span.clone();
         let mut left = self.equality_expr();
         while self.check(TokenKind::Ampersand) {
@@ -733,13 +773,13 @@ impl<'s> Parser<'s> {
         left
     }
 
-    /// `tickwise xor` expression parsing
-    fn tickwise_xor_expr(&mut self) -> Expression {
+    /// `bitwise xor` expression parsing
+    fn bitwise_xor_expr(&mut self) -> Expression {
         let start_span = self.peek().span.clone();
-        let mut left = self.tickwise_and_expr();
+        let mut left = self.bitwise_and_expr();
         while self.check(TokenKind::Caret) {
             self.bump();
-            let right = self.tickwise_and_expr();
+            let right = self.bitwise_and_expr();
             let end_span = self.prev().span.clone();
             left = Expression::Bin {
                 span: start_span.clone() + end_span,
@@ -751,13 +791,13 @@ impl<'s> Parser<'s> {
         left
     }
 
-    /// `tickwise or` expression parsing
-    fn tickwise_or_expr(&mut self) -> Expression {
+    /// `bitwise or` expression parsing
+    fn bitwise_or_expr(&mut self) -> Expression {
         let start_span = self.peek().span.clone();
-        let mut left = self.tickwise_xor_expr();
+        let mut left = self.bitwise_xor_expr();
         while self.check(TokenKind::Bar) {
             self.bump();
-            let right = self.tickwise_xor_expr();
+            let right = self.bitwise_xor_expr();
             let end_span = self.prev().span.clone();
             left = Expression::Bin {
                 span: start_span.clone() + end_span,
@@ -772,10 +812,10 @@ impl<'s> Parser<'s> {
     /// `Logical and` expression parsing
     fn logical_and_expr(&mut self) -> Expression {
         let start_span = self.peek().span.clone();
-        let mut left = self.tickwise_or_expr();
+        let mut left = self.bitwise_or_expr();
         while self.check(TokenKind::DoubleAmp) {
             self.bump();
-            let right = self.tickwise_or_expr();
+            let right = self.bitwise_or_expr();
             let end_span = self.prev().span.clone();
             left = Expression::Bin {
                 span: start_span.clone() + end_span,

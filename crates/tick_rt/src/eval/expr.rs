@@ -6,16 +6,17 @@ use crate::{
     rt::{
         env::Environment,
         flow::{ControlFlow, Flow},
-        value::{Bound, Callable, Closure, Instance, Method, Native, Type, Value},
+        value::{Bound, Callable, Closure, Function, Instance, Method, Native, Type, Value},
     },
 };
+use std::{cell::RefCell, collections::HashMap};
 use tick_ast::{
     atom::{BinaryOp, Lit, UnaryOp},
     expr::Expression,
+    stmt::Block,
 };
 use tick_common::{bail, bug, io::IO};
 use tick_lex::token::Span;
-use std::{cell::RefCell, collections::HashMap};
 
 /// Implementation
 impl<I: IO> Interpreter<I> {
@@ -456,6 +457,17 @@ impl<I: IO> Interpreter<I> {
         Ok(Value::Instance(list_value))
     }
 
+    /// Evaluates lambda expression
+    fn eval_anon_fn(&mut self, params: &Vec<String>, block: &Block) -> Flow<Value> {
+        Ok(Value::Callable(Callable::Closure(Ref::new(Closure {
+            function: Ref::new(Function {
+                params: params.clone(),
+                block: block.clone(),
+            }),
+            environment: self.env.clone(),
+        }))))
+    }
+
     /// Evaluates expression
     pub fn eval(&mut self, expr: &Expression) -> Flow<Value> {
         // Matching expression
@@ -476,6 +488,7 @@ impl<I: IO> Interpreter<I> {
             } => self.eval_field(span, name, container),
             Expression::Call { span, args, what } => self.eval_call(span, args, what),
             Expression::List { span, list } => self.eval_list(span, list),
+            Expression::Fn { params, block, .. } => self.eval_anon_fn(params, block),
         }
     }
 }

@@ -1,5 +1,8 @@
 /// Imports
-use crate::atom::{BinaryOp, Lit, UnaryOp};
+use crate::{
+    atom::{BinaryOp, Lit, UnaryOp},
+    stmt::Block,
+};
 use tick_lex::token::Span;
 
 /// Range
@@ -61,5 +64,11 @@ pub enum Expression {
     List {
         span: Span,
         list: Vec<Expression>,
+    },
+    /// Anonymous function expression
+    Fn {
+        span: Span,
+        params: Vec<String>,
+        block: Block,
     },
 }

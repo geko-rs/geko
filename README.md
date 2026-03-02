@@ -33,7 +33,7 @@ Nightly builds are available and can be run on **stable Rust**, giving you a cha
 - [ ] `crypto` library
 - [ ] `sys` library
 - [ ] `process` library
-- [ ] implement anonymous functions
+- [x] implement anonymous functions
 - [ ] write specification for standard library
 - [ ] start writing documentation
 - [ ] basic jit
