@@ -48,6 +48,12 @@ pub enum Statement {
         name: String,
         methods: Vec<Function>,
     },
+    // Enum declaration
+    Enum {
+        span: Span,
+        name: String,
+        variants: Vec<String>,
+    },
     // Function declaration
     Function(Function),
     // Let declaration
@@ -107,6 +113,7 @@ impl Statement {
             | Statement::If { .. }
             | Statement::For { .. }
             | Statement::Type { .. }
+            | Statement::Enum { .. }
             | Statement::Function(_)
             | Statement::Block(_) => false,
             // With semicolon

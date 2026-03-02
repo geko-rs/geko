@@ -6,7 +6,7 @@ use crate::{
     rt::{
         env::Environment,
         flow::{ControlFlow, Flow},
-        value::{Callable, Closure, Function, Method, Type, Value},
+        value::{Callable, Closure, Enum, Function, Method, Type, Value},
     },
 };
 use std::{cell::RefCell, collections::HashMap};
@@ -98,6 +98,22 @@ impl<'io> Interpreter<'io> {
         self.env
             .borrow_mut()
             .define(name_span, &name, Value::Type(type_ref));
+
+        Ok(())
+    }
+
+    /// Executes enum statement
+    fn exec_enum_decl(&mut self, span: &Span, name: &str, variants: &Vec<String>) -> Flow<()> {
+        // Creating enum
+        let enum_ref = Ref::new(Enum {
+            name: name.to_string(),
+            variants: variants.clone(),
+        });
+
+        // Defining enum in the environment
+        self.env
+            .borrow_mut()
+            .define(span, name, Value::Enum(enum_ref));
 
         Ok(())
     }
@@ -398,6 +414,12 @@ impl<'io> Interpreter<'io> {
                 methods,
                 ..
             } => self.exec_type_decl(name_span, name, &methods),
+            Statement::Enum {
+                span,
+                name,
+                variants,
+                ..
+            } => self.exec_enum_decl(span, name, variants),
             Statement::Function(function) => self.exec_function_decl(&function),
             Statement::Let { span, name, value } => self.exec_let_decl(span, name, value),
             Statement::Assign {

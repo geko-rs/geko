@@ -3,9 +3,9 @@ use crate::{
     errors::LexError,
     token::{Span, Token, TokenKind},
 };
-use tick_common::bail;
 use miette::NamedSource;
 use std::{str::Chars, sync::Arc};
+use tick_common::bail;
 
 /// Represents lexer
 pub struct Lexer<'s> {
@@ -291,6 +291,7 @@ impl<'s> Lexer<'s> {
             "let" => TokenKind::Let,
             "use" => TokenKind::Use,
             "type" => TokenKind::Type,
+            "enum" => TokenKind::Enum,
             "if" => TokenKind::If,
             "else" => TokenKind::Else,
             "return" => TokenKind::Return,

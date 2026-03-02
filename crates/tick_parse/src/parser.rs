@@ -217,6 +217,31 @@ impl<'s> Parser<'s> {
         }
     }
 
+    /// Enum declaration parsing
+    fn enum_stmt(&mut self) -> Statement {
+        let start_span = self.peek().span.clone();
+
+        // Parsing enum name
+        self.expect(TokenKind::Enum);
+        let name = self.expect(TokenKind::Id);
+
+        // Parsing variants
+        let variants = self.sep_by(
+            TokenKind::Lbrace,
+            TokenKind::Rbrace,
+            TokenKind::Comma,
+            |p| p.expect(TokenKind::Id).lexeme,
+        );
+
+        let end_span = self.prev().span.clone();
+
+        Statement::Enum {
+            span: start_span + end_span,
+            name: name.lexeme,
+            variants,
+        }
+    }
+
     /// Assignment statement
     fn assignment_stmt(&mut self) -> Statement {
         let start_span = self.peek().span.clone();
@@ -367,6 +392,7 @@ impl<'s> Parser<'s> {
             TokenKind::If => self.if_stmt(),
             TokenKind::Let => self.let_stmt(),
             TokenKind::Type => self.type_stmt(),
+            TokenKind::Enum => self.enum_stmt(),
             TokenKind::Fn => Statement::Function(self.function()),
             TokenKind::Return => self.return_stmt(),
             TokenKind::Continue => self.continue_stmt(),
@@ -440,18 +466,13 @@ impl<'s> Parser<'s> {
         )
     }
 
-    /// Single parameter parsing
-    fn param(&mut self) -> String {
-        return self.expect(TokenKind::Id).lexeme;
-    }
-
     /// Parameters parsing
     pub(crate) fn params(&mut self) -> Vec<String> {
         self.sep_by(
             TokenKind::Lparen,
             TokenKind::Rparen,
             TokenKind::Comma,
-            |s| s.param(),
+            |s| s.expect(TokenKind::Id).lexeme,
         )
     }
 
@@ -557,7 +578,7 @@ impl<'s> Parser<'s> {
         // Parsing function params
         let params = if self.check(TokenKind::Bar) {
             self.sep_by(TokenKind::Bar, TokenKind::Bar, TokenKind::Comma, |p| {
-                p.param()
+                p.expect(TokenKind::Id).lexeme
             })
         } else {
             self.expect(TokenKind::DoubleBar);

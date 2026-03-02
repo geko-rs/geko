@@ -75,6 +75,15 @@ pub struct Instance {
     pub fields: HashMap<String, Value>,
 }
 
+/// User enum type
+#[derive(Clone, Debug)]
+pub struct Enum {
+    /// Enum type name
+    pub name: String,
+    /// Enum type variants
+    pub variants: Vec<String>,
+}
+
 /// Module
 #[derive(Clone, Debug)]
 pub struct Module {
@@ -120,6 +129,8 @@ pub enum Value {
     Callable(Callable),
     /// Meta type
     Type(Ref<Type>),
+    /// Enum type
+    Enum(Ref<Enum>),
     /// Module
     Module(MutRef<Module>),
     /// Type instance
@@ -141,6 +152,7 @@ impl Display for Value {
             Value::String(string) => write!(f, "{string}"),
             Value::Callable(_) => write!(f, "Callable"),
             Value::Type(typ) => write!(f, "Type({})", typ.name),
+            Value::Enum(typ) => write!(f, "Enum({})", typ.name),
             Value::Module(_) => write!(f, "Module"),
             Value::Instance(instance) => write!(f, "Instance({})", instance.borrow().type_of.name),
             Value::Any(_) => write!(f, "Any"),

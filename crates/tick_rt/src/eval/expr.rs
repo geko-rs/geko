@@ -236,6 +236,15 @@ impl<'io> Interpreter<'io> {
                     name: name.to_string()
                 }),
             },
+            // Enum field access
+            Value::Enum(e) => match e.variants.iter().position(|v| v == name) {
+                Some(idx) => Ok(Value::Int(idx as i64)),
+                None => bail!(RuntimeError::UndefinedField {
+                    src: span.0.clone(),
+                    span: span.1.clone().into(),
+                    name: name.to_string()
+                }),
+            },
             // Otherwise, raising error
             value => bail!(RuntimeError::CouldNotResolveFields {
                 src: span.0.clone(),

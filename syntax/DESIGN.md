@@ -203,19 +203,33 @@ if int(a) > 5 {
 
 ### Errors raising
 Bail immediately breaks execution with error:
-```
+```tick
 bail "some text"
 ```
 
 ### Anonymous function
 Tick supports rust-like anonymous functions:
-```
+```tick
 let a = || 1;
 let b = |a| a + 1;
 let c = |a| {
-    return a + 1;
+  return a + 1;
 };
 println(a());
 println(b(1));
 println(c(2));
+```
+
+### Enumerations
+Tick supports enumerations. Every variant is just an int variable inside `Dog`.
+```tick
+enum Dog {
+  Poodle,  # 0
+  Bulldog, # 1
+  Beagle,
+  Husky
+}
+let dog = Dog.Poodle;
+println(dog == 0); # true
+println(dog == Dog.Beagle); # false
 ```

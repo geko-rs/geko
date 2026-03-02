@@ -92,7 +92,7 @@ pub enum Lit {
     Null,
 }
 
-/// Function
+/// Represents function
 #[derive(Debug, Clone)]
 pub struct Function {
     /// Function span
