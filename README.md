@@ -1,20 +1,14 @@
 #### 📐 Tick
 ... is very tiny, lightweight, dynamic programming language designed to be simple and readable.
 
-#### Quick Start
+#### 🔬 Quick Start
 ```tick
-println("Hello, world! 🔬")
+println("Hello, world!")
 ```
 
-#### Status
-
-tick is currently a **work in progress project (WIP)** ⚙️.  
+#### ⚙️ Status
+`Tick` is currently a **work in progress project (WIP)**.  
 Nightly builds are available and can be run on **stable Rust**, giving you a chance to explore and test the language as it evolves.
-
-#### Quick Start
-```tick
-println("Hello, world! 🌟");
-```
 
 #### ToDo
 - [ ] `os` library
@@ -26,7 +20,7 @@ println("Hello, world! 🌟");
 - [ ] `fmt` library
 - [ ] `convert` library
 - [ ] `reflect` library
-- [x] `env` library
+- [x] `env` library (by `Antares64`)
 - [ ] `mem` library
 - [ ] `signal` library
 - [ ] `zip` library
