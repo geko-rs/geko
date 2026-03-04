@@ -190,7 +190,6 @@ impl<'s> Lexer<'s> {
         self.advance();
         // Reading next character.
         let ch = self.current;
-        self.advance();
         // Checking character kind.
         match ch {
             Some('n') => '\n',

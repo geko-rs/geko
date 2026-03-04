@@ -544,7 +544,7 @@ fn floor() -> Ref<Native> {
         function: Box::new(|_, span, values| match values.get(0).unwrap() {
             Value::Float(float) => Value::Float(float.floor()),
             _ => bail!(RuntimeError::Bail {
-                text: "not a float".to_string(),
+                text: "argument is not a float".to_string(),
                 src: span.0.clone(),
                 span: span.1.clone().into()
             }),
@@ -559,7 +559,7 @@ fn ceil() -> Ref<Native> {
         function: Box::new(|_, span, values| match values.get(0).unwrap() {
             Value::Float(float) => Value::Float(float.ceil()),
             _ => bail!(RuntimeError::Bail {
-                text: "not a float".to_string(),
+                text: "argument is not a float".to_string(),
                 src: span.0.clone(),
                 span: span.1.clone().into()
             }),
@@ -574,7 +574,7 @@ fn trunc() -> Ref<Native> {
         function: Box::new(|_, span, values| match values.get(0).unwrap() {
             Value::Float(float) => Value::Float(float.trunc()),
             _ => bail!(RuntimeError::Bail {
-                text: "not a float".to_string(),
+                text: "argument is not a float".to_string(),
                 src: span.0.clone(),
                 span: span.1.clone().into()
             }),
@@ -589,7 +589,7 @@ fn round() -> Ref<Native> {
         function: Box::new(|_, span, values| match values.get(0).unwrap() {
             Value::Float(float) => Value::Float(float.round()),
             _ => bail!(RuntimeError::Bail {
-                text: "not a float".to_string(),
+                text: "argument is not a float".to_string(),
                 src: span.0.clone(),
                 span: span.1.clone().into()
             }),
