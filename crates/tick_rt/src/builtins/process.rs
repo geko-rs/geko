@@ -11,7 +11,7 @@ use std::{
     cell::RefCell,
     collections::HashMap,
     io::{Read, Write},
-    process::{Child, Command},
+    process::{self, Child, Command},
     rc::Rc,
     thread,
     time::Duration,
@@ -28,14 +28,34 @@ fn sleep() -> Ref<Native> {
                     thread::sleep(Duration::from_millis(*time as u64));
                     Value::Null
                 } else {
-                    utils::error(span, "time should be >= 0")
+                    utils::error(span, "time expected to be >= 0")
                 }
             }
-            _ => utils::error(span, "time is not an int"),
+            _ => utils::error(span, "time expected to be an int"),
         }),
     });
 }
 
+/// Process exit
+fn exit() -> Ref<Native> {
+    return Ref::new(Native {
+        arity: 1,
+        function: Box::new(|_, span, values| match values.get(0).unwrap() {
+            Value::Int(code) => {
+                if *code >= 0 {
+                    if *code <= i32::MAX as i64 {
+                        process::exit(*code as i32)
+                    } else {
+                        utils::error(span, "exit code is too large")
+                    }
+                } else {
+                    utils::error(span, "exit code expected to be >= 0")
+                }
+            }
+            _ => utils::error(span, "exit code expected to be int"),
+        }),
+    });
+}
 /// Process spawn
 fn spawn() -> Ref<Native> {
     return Ref::new(Native {
@@ -357,6 +377,7 @@ pub fn provide_env() -> EnvRef {
     let mut env = Environment::default();
 
     env.force_define("sleep", Value::Callable(Callable::Native(sleep())));
+    env.force_define("exit", Value::Callable(Callable::Native(exit())));
     env.force_define("spawn", Value::Callable(Callable::Native(spawn())));
     env.force_define("Process", Value::Type(provide_process_type()));
 

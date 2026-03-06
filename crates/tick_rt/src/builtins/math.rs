@@ -26,7 +26,7 @@ fn sin() -> Ref<Native> {
             Value::Int(int) => Value::Float(f64::sin(*int as f64)),
             Value::Float(float) => Value::Float(f64::sin(*float)),
             _ => bail!(RuntimeError::Bail {
-                text: "not a number".to_string(),
+                text: "argument is expected to be a number".to_string(),
                 src: span.0.clone(),
                 span: span.1.clone().into()
             }),
@@ -42,7 +42,7 @@ fn sinh() -> Ref<Native> {
             Value::Int(int) => Value::Float(f64::sinh(*int as f64)),
             Value::Float(float) => Value::Float(f64::sinh(*float)),
             _ => bail!(RuntimeError::Bail {
-                text: "not a number".to_string(),
+                text: "argument is expected to be a number".to_string(),
                 src: span.0.clone(),
                 span: span.1.clone().into()
             }),
@@ -58,7 +58,7 @@ fn cos() -> Ref<Native> {
             Value::Int(int) => Value::Float(f64::cos(*int as f64)),
             Value::Float(float) => Value::Float(f64::cos(*float)),
             _ => bail!(RuntimeError::Bail {
-                text: "not a number".to_string(),
+                text: "argument is expected to be a number".to_string(),
                 src: span.0.clone(),
                 span: span.1.clone().into()
             }),
@@ -74,7 +74,7 @@ fn cosh() -> Ref<Native> {
             Value::Int(int) => Value::Float(f64::cosh(*int as f64)),
             Value::Float(float) => Value::Float(f64::cosh(*float)),
             _ => bail!(RuntimeError::Bail {
-                text: "not a number".to_string(),
+                text: "argument is expected to be a number".to_string(),
                 src: span.0.clone(),
                 span: span.1.clone().into()
             }),
@@ -90,7 +90,7 @@ fn asin() -> Ref<Native> {
             Value::Int(int) => Value::Float(f64::asin(*int as f64)),
             Value::Float(float) => Value::Float(f64::asin(*float)),
             _ => bail!(RuntimeError::Bail {
-                text: "not a number".to_string(),
+                text: "argument is expected to be a number".to_string(),
                 src: span.0.clone(),
                 span: span.1.clone().into()
             }),
@@ -106,7 +106,7 @@ fn asinh() -> Ref<Native> {
             Value::Int(int) => Value::Float(f64::asinh(*int as f64)),
             Value::Float(float) => Value::Float(f64::asinh(*float)),
             _ => bail!(RuntimeError::Bail {
-                text: "not a number".to_string(),
+                text: "argument is expected to be a number".to_string(),
                 src: span.0.clone(),
                 span: span.1.clone().into()
             }),
@@ -122,7 +122,7 @@ fn acos() -> Ref<Native> {
             Value::Int(int) => Value::Float(f64::acos(*int as f64)),
             Value::Float(float) => Value::Float(f64::acos(*float)),
             _ => bail!(RuntimeError::Bail {
-                text: "not a number".to_string(),
+                text: "argument is expected to be a number".to_string(),
                 src: span.0.clone(),
                 span: span.1.clone().into()
             }),
@@ -138,7 +138,7 @@ fn acosh() -> Ref<Native> {
             Value::Int(int) => Value::Float(f64::acosh(*int as f64)),
             Value::Float(float) => Value::Float(f64::acosh(*float)),
             _ => bail!(RuntimeError::Bail {
-                text: "not a number".to_string(),
+                text: "argument is expected to be a number".to_string(),
                 src: span.0.clone(),
                 span: span.1.clone().into()
             }),
@@ -154,7 +154,7 @@ fn atg() -> Ref<Native> {
             Value::Int(int) => Value::Float(f64::atan(*int as f64)),
             Value::Float(float) => Value::Float(f64::atan(*float)),
             _ => bail!(RuntimeError::Bail {
-                text: "not a number".to_string(),
+                text: "argument is expected to be a number".to_string(),
                 src: span.0.clone(),
                 span: span.1.clone().into()
             }),
@@ -173,7 +173,7 @@ fn atg2() -> Ref<Native> {
                 (Value::Float(x), Value::Int(y)) => Value::Float(f64::atan2(*y as f64, *x)),
                 (Value::Float(x), Value::Float(y)) => Value::Float(f64::atan2(*y, *x)),
                 _ => bail!(RuntimeError::Bail {
-                    text: "not a number".to_string(),
+                    text: "argument is expected to be a number".to_string(),
                     src: span.0.clone(),
                     span: span.1.clone().into()
                 }),
@@ -190,7 +190,7 @@ fn tg() -> Ref<Native> {
             Value::Int(int) => Value::Float(f64::tan(*int as f64)),
             Value::Float(float) => Value::Float(f64::tan(*float)),
             _ => bail!(RuntimeError::Bail {
-                text: "not a number".to_string(),
+                text: "argument is expected to be a number".to_string(),
                 src: span.0.clone(),
                 span: span.1.clone().into()
             }),
@@ -206,7 +206,7 @@ fn tgh() -> Ref<Native> {
             Value::Int(int) => Value::Float(f64::tanh(*int as f64)),
             Value::Float(float) => Value::Float(f64::tanh(*float)),
             _ => bail!(RuntimeError::Bail {
-                text: "not a number".to_string(),
+                text: "argument is expected to be a number".to_string(),
                 src: span.0.clone(),
                 span: span.1.clone().into()
             }),
@@ -222,7 +222,7 @@ fn ctg() -> Ref<Native> {
             Value::Int(int) => Value::Float(1.0 / f64::tan(*int as f64)),
             Value::Float(float) => Value::Float(1.0 / f64::tan(*float)),
             _ => bail!(RuntimeError::Bail {
-                text: "not a number".to_string(),
+                text: "argument is expected to be a number".to_string(),
                 src: span.0.clone(),
                 span: span.1.clone().into()
             }),
@@ -238,7 +238,7 @@ fn ctgh() -> Ref<Native> {
             Value::Int(int) => Value::Float(1.0 / f64::tanh(*int as f64)),
             Value::Float(float) => Value::Float(1.0 / f64::tanh(*float)),
             _ => bail!(RuntimeError::Bail {
-                text: "not a number".to_string(),
+                text: "argument is expected to be a number".to_string(),
                 src: span.0.clone(),
                 span: span.1.clone().into()
             }),
@@ -254,7 +254,7 @@ fn sqrt() -> Ref<Native> {
             Value::Int(int) => Value::Float(f64::sqrt(*int as f64)),
             Value::Float(float) => Value::Float(f64::sqrt(*float)),
             _ => bail!(RuntimeError::Bail {
-                text: "not a number".to_string(),
+                text: "argument is expected to be a number".to_string(),
                 src: span.0.clone(),
                 span: span.1.clone().into()
             }),
@@ -270,7 +270,7 @@ fn cbrt() -> Ref<Native> {
             Value::Int(int) => Value::Float(f64::cbrt(*int as f64)),
             Value::Float(float) => Value::Float(f64::cbrt(*float)),
             _ => bail!(RuntimeError::Bail {
-                text: "not a number".to_string(),
+                text: "argument is expected to be a number".to_string(),
                 src: span.0.clone(),
                 span: span.1.clone().into()
             }),
@@ -287,7 +287,7 @@ fn log() -> Ref<Native> {
                 Value::Int(i) => *i as f64,
                 Value::Float(f) => *f,
                 _ => bail!(RuntimeError::Bail {
-                    text: "not a number".to_string(),
+                    text: "argument is expected to be a number".to_string(),
                     src: span.0.clone(),
                     span: span.1.clone().into()
                 }),
@@ -296,7 +296,7 @@ fn log() -> Ref<Native> {
                 Value::Int(i) => *i as f64,
                 Value::Float(f) => *f,
                 _ => bail!(RuntimeError::Bail {
-                    text: "not a number".to_string(),
+                    text: "argument is expected to be a number".to_string(),
                     src: span.0.clone(),
                     span: span.1.clone().into()
                 }),
@@ -316,7 +316,7 @@ fn min() -> Ref<Native> {
                 Value::Int(b) => Value::Int(*a.min(b)),
                 Value::Float(b) => Value::Float((*a as f64).min(*b)),
                 _ => bail!(RuntimeError::Bail {
-                    text: "not a number".to_string(),
+                    text: "argument is expected to be a number".to_string(),
                     src: span.0.clone(),
                     span: span.1.clone().into()
                 }),
@@ -326,13 +326,13 @@ fn min() -> Ref<Native> {
                 Value::Int(b) => Value::Float(a.min(*b as f64)),
                 Value::Float(b) => Value::Float(a.min(*b)),
                 _ => bail!(RuntimeError::Bail {
-                    text: "not a number".to_string(),
+                    text: "argument is expected to be a number".to_string(),
                     src: span.0.clone(),
                     span: span.1.clone().into()
                 }),
             },
             _ => bail!(RuntimeError::Bail {
-                text: "not a number".to_string(),
+                text: "argument is expected to be a number".to_string(),
                 src: span.0.clone(),
                 span: span.1.clone().into()
             }),
@@ -350,7 +350,7 @@ fn max() -> Ref<Native> {
                 Value::Int(b) => Value::Int(*a.max(b)),
                 Value::Float(b) => Value::Float((*a as f64).max(*b)),
                 _ => bail!(RuntimeError::Bail {
-                    text: "not a number".to_string(),
+                    text: "argument is expected to be a number".to_string(),
                     src: span.0.clone(),
                     span: span.1.clone().into()
                 }),
@@ -360,13 +360,13 @@ fn max() -> Ref<Native> {
                 Value::Int(b) => Value::Float(a.max(*b as f64)),
                 Value::Float(b) => Value::Float(a.max(*b)),
                 _ => bail!(RuntimeError::Bail {
-                    text: "not a number".to_string(),
+                    text: "argument is expected to be a number".to_string(),
                     src: span.0.clone(),
                     span: span.1.clone().into()
                 }),
             },
             _ => bail!(RuntimeError::Bail {
-                text: "not a number".to_string(),
+                text: "argument is expected to be a number".to_string(),
                 src: span.0.clone(),
                 span: span.1.clone().into()
             }),
@@ -413,7 +413,7 @@ fn clamp() -> Ref<Native> {
                     Value::Float((*x as f64).clamp(*a, *b))
                 }
                 _ => bail!(RuntimeError::Bail {
-                    text: "not a number".to_string(),
+                    text: "argument is expected to be a number".to_string(),
                     src: span.0.clone(),
                     span: span.1.clone().into()
                 }),
@@ -452,13 +452,13 @@ fn clamp() -> Ref<Native> {
                     Value::Float(x.clamp(*a, *b))
                 }
                 _ => bail!(RuntimeError::Bail {
-                    text: "not a number".to_string(),
+                    text: "argument is expected to be a number".to_string(),
                     src: span.0.clone(),
                     span: span.1.clone().into()
                 }),
             },
             _ => bail!(RuntimeError::Bail {
-                text: "not a number".to_string(),
+                text: "argument is expected to be a number".to_string(),
                 src: span.0.clone(),
                 span: span.1.clone().into()
             }),
@@ -474,7 +474,7 @@ fn log2() -> Ref<Native> {
             Value::Int(int) => Value::Float(f64::log2(*int as f64)),
             Value::Float(float) => Value::Float(f64::log2(*float)),
             _ => bail!(RuntimeError::Bail {
-                text: "not a number".to_string(),
+                text: "argument is expected to be a number".to_string(),
                 src: span.0.clone(),
                 span: span.1.clone().into()
             }),
@@ -490,7 +490,7 @@ fn log10() -> Ref<Native> {
             Value::Int(int) => Value::Float(f64::log10(*int as f64)),
             Value::Float(float) => Value::Float(f64::log10(*float)),
             _ => bail!(RuntimeError::Bail {
-                text: "not a number".to_string(),
+                text: "argument is expected to be a number".to_string(),
                 src: span.0.clone(),
                 span: span.1.clone().into()
             }),
@@ -506,7 +506,7 @@ fn exp() -> Ref<Native> {
             Value::Int(int) => Value::Float(f64::exp(*int as f64)),
             Value::Float(float) => Value::Float(f64::exp(*float)),
             _ => bail!(RuntimeError::Bail {
-                text: "not a number".to_string(),
+                text: "argument is expected to be a number".to_string(),
                 src: span.0.clone(),
                 span: span.1.clone().into()
             }),
@@ -529,7 +529,7 @@ fn abs() -> Ref<Native> {
             },
             Value::Float(float) => Value::Float(float.abs()),
             _ => bail!(RuntimeError::Bail {
-                text: "not a number".to_string(),
+                text: "argument is expected to be a number".to_string(),
                 src: span.0.clone(),
                 span: span.1.clone().into()
             }),
@@ -544,7 +544,7 @@ fn floor() -> Ref<Native> {
         function: Box::new(|_, span, values| match values.get(0).unwrap() {
             Value::Float(float) => Value::Float(float.floor()),
             _ => bail!(RuntimeError::Bail {
-                text: "argument is not a float".to_string(),
+                text: "argument is expected to be a float".to_string(),
                 src: span.0.clone(),
                 span: span.1.clone().into()
             }),
@@ -559,7 +559,7 @@ fn ceil() -> Ref<Native> {
         function: Box::new(|_, span, values| match values.get(0).unwrap() {
             Value::Float(float) => Value::Float(float.ceil()),
             _ => bail!(RuntimeError::Bail {
-                text: "argument is not a float".to_string(),
+                text: "argument is expected to be a float".to_string(),
                 src: span.0.clone(),
                 span: span.1.clone().into()
             }),
@@ -574,7 +574,7 @@ fn trunc() -> Ref<Native> {
         function: Box::new(|_, span, values| match values.get(0).unwrap() {
             Value::Float(float) => Value::Float(float.trunc()),
             _ => bail!(RuntimeError::Bail {
-                text: "argument is not a float".to_string(),
+                text: "argument is expected to be a float".to_string(),
                 src: span.0.clone(),
                 span: span.1.clone().into()
             }),
@@ -589,7 +589,7 @@ fn round() -> Ref<Native> {
         function: Box::new(|_, span, values| match values.get(0).unwrap() {
             Value::Float(float) => Value::Float(float.round()),
             _ => bail!(RuntimeError::Bail {
-                text: "argument is not a float".to_string(),
+                text: "argument is expected to be a float".to_string(),
                 src: span.0.clone(),
                 span: span.1.clone().into()
             }),
@@ -646,7 +646,7 @@ fn pow() -> Ref<Native> {
                 Value::Float(b) => Value::Float((*a as f64).powf(*b)),
                 // Otherwise, raising error
                 _ => bail!(RuntimeError::Bail {
-                    text: "not a number".to_string(),
+                    text: "argument is expected to be a number".to_string(),
                     src: span.0.clone(),
                     span: span.1.clone().into()
                 }),
@@ -659,13 +659,13 @@ fn pow() -> Ref<Native> {
                 Value::Float(b) => Value::Float(a.powf(*b)),
                 // Otherwise, raising error
                 _ => bail!(RuntimeError::Bail {
-                    text: "not a number".to_string(),
+                    text: "argument is expected to be a number".to_string(),
                     src: span.0.clone(),
                     span: span.1.clone().into()
                 }),
             },
             _ => bail!(RuntimeError::Bail {
-                text: "not a number".to_string(),
+                text: "argument is expected to be a number".to_string(),
                 src: span.0.clone(),
                 span: span.1.clone().into()
             }),
@@ -684,7 +684,7 @@ fn hypot() -> Ref<Native> {
                 (Value::Float(x), Value::Int(y)) => Value::Float(f64::hypot(*x, *y as f64)),
                 (Value::Float(x), Value::Float(y)) => Value::Float(f64::hypot(*x, *y)),
                 _ => bail!(RuntimeError::Bail {
-                    text: "not a number".to_string(),
+                    text: "argument is expected to be a number".to_string(),
                     src: span.0.clone(),
                     span: span.1.clone().into()
                 }),
@@ -710,7 +710,7 @@ fn rnd() -> Ref<Native> {
                     Value::Float(rand::rng().random_range(*x..*y))
                 }
                 _ => bail!(RuntimeError::Bail {
-                    text: "not a number".to_string(),
+                    text: "argument is expected to be a number".to_string(),
                     src: span.0.clone(),
                     span: span.1.clone().into()
                 }),
