@@ -11,7 +11,7 @@ use crate::{
 };
 use std::{cell::RefCell, collections::HashMap};
 use tick_ast::{
-    atom::{BinaryOp, Lit, UnaryOp},
+    atom::{BinOp, Lit, UnaryOp},
     expr::Expression,
     stmt::Block,
 };
@@ -37,101 +37,165 @@ impl<'io> Interpreter<'io> {
         })
     }
 
+    /// Performs binary operation over floats
+    fn float_bin_op(&self, span: &Span, a: f64, b: f64, op: BinOp) -> Value {
+        // Matching operator
+        match op {
+            BinOp::Gt => Value::Bool(a > b),
+            BinOp::Ge => Value::Bool(a >= b),
+            BinOp::Lt => Value::Bool(a < b),
+            BinOp::Le => Value::Bool(a <= b),
+            BinOp::Eq => Value::Bool(a == b),
+            BinOp::Ne => Value::Bool(a != b),
+            BinOp::Add => Value::Float(a + b),
+            BinOp::Sub => Value::Float(a - b),
+            BinOp::Mul => Value::Float(a * b),
+            BinOp::Div => {
+                if b > 0.0 {
+                    Value::Float(a / b)
+                } else {
+                    bail!(RuntimeError::ZeroDivision {
+                        src: span.0.clone(),
+                        span: span.1.clone().into()
+                    })
+                }
+            }
+            BinOp::Mod => Value::Float(a % b),
+            _ => bail!(RuntimeError::InvalidBinOp {
+                op,
+                a: Value::Float(a),
+                b: Value::Float(b),
+                src: span.0.clone(),
+                span: span.1.clone().into()
+            }),
+        }
+    }
+
+    /// Performs binary operation over ints
+    fn int_bin_op(&self, span: &Span, a: i64, b: i64, op: BinOp) -> Value {
+        // Matching operator
+        match op {
+            BinOp::Gt => Value::Bool(a > b),
+            BinOp::Ge => Value::Bool(a >= b),
+            BinOp::Lt => Value::Bool(a < b),
+            BinOp::Le => Value::Bool(a <= b),
+            BinOp::Eq => Value::Bool(a == b),
+            BinOp::Ne => Value::Bool(a != b),
+            BinOp::Add => Value::Int(a + b),
+            BinOp::Sub => Value::Int(a - b),
+            BinOp::Mul => Value::Int(a * b),
+            BinOp::Div => {
+                if b > 0 {
+                    Value::Int(a / b)
+                } else {
+                    bail!(RuntimeError::ZeroDivision {
+                        src: span.0.clone(),
+                        span: span.1.clone().into()
+                    })
+                }
+            }
+            BinOp::Mod => Value::Int(a % b),
+            _ => bail!(RuntimeError::InvalidBinOp {
+                op,
+                a: Value::Int(a),
+                b: Value::Int(b),
+                src: span.0.clone(),
+                span: span.1.clone().into()
+            }),
+        }
+    }
+
+    /// Performs binary operation over bools
+    fn bool_bin_op(&self, span: &Span, a: bool, b: bool, op: BinOp) -> Value {
+        // Matching operator
+        match op {
+            BinOp::And => Value::Bool(a && b),
+            BinOp::Or => Value::Bool(a || b),
+            BinOp::Gt => Value::Bool(a & !b),
+            BinOp::Ge => Value::Bool(a >= b),
+            BinOp::Lt => Value::Bool(!a & b),
+            BinOp::Le => Value::Bool(a <= b),
+            BinOp::Eq => Value::Bool(a == b),
+            BinOp::Ne => Value::Bool(a != b),
+            BinOp::BitAnd => Value::Bool(a & b),
+            BinOp::BitOr => Value::Bool(a | b),
+            BinOp::Xor => Value::Bool(a ^ b),
+            _ => bail!(RuntimeError::InvalidBinOp {
+                op,
+                a: Value::Bool(a),
+                b: Value::Bool(b),
+                src: span.0.clone(),
+                span: span.1.clone().into()
+            }),
+        }
+    }
+
+    /// Performs binary operation over strings
+    fn string_bin_op(&self, span: &Span, a: String, b: String, op: BinOp) -> Value {
+        // Matching operator
+        match op {
+            BinOp::Ge => Value::Bool(a >= b),
+            BinOp::Le => Value::Bool(a <= b),
+            BinOp::Eq => Value::Bool(a == b),
+            BinOp::Ne => Value::Bool(a != b),
+            BinOp::Add => Value::String(format!("{a}{b}")),
+            _ => bail!(RuntimeError::InvalidBinOp {
+                op,
+                a: Value::String(a),
+                b: Value::String(b),
+                src: span.0.clone(),
+                span: span.1.clone().into()
+            }),
+        }
+    }
+
     /// Performs binary operation over values
-    pub(crate) fn perform_binary_op(
+    pub(crate) fn perform_bin_op(
         &self,
         span: &Span,
         left: Value,
         right: Value,
-        op: &BinaryOp,
+        op: BinOp,
     ) -> Value {
-        // Invalid binary op
-        let invalid_bin_op = || {
-            bail!(RuntimeError::InvalidBinaryOp {
-                op: *op,
-                a: left.clone(),
-                b: right.clone(),
+        // Invalid binary operation error
+        let invalid_bin_op = |a, b| {
+            bail!(RuntimeError::InvalidBinOp {
+                op,
+                a,
+                b,
                 src: span.0.clone(),
                 span: span.1.clone().into()
-            });
+            })
         };
 
         // Matching binary operator
-        match (left.clone(), right.clone()) {
-            (Value::Bool(a), Value::Bool(b)) => match op {
-                BinaryOp::And => Value::Bool(a && b),
-                BinaryOp::Or => Value::Bool(a || b),
-                BinaryOp::Gt => Value::Bool(a & !b),
-                BinaryOp::Ge => Value::Bool(a >= b),
-                BinaryOp::Lt => Value::Bool(!a & b),
-                BinaryOp::Le => Value::Bool(a <= b),
-                BinaryOp::Eq => Value::Bool(a == b),
-                BinaryOp::Ne => Value::Bool(a != b),
-                BinaryOp::BitAnd => Value::Bool(a & b),
-                BinaryOp::BitOr => Value::Bool(a | b),
-                BinaryOp::Xor => Value::Bool(a ^ b),
-                _ => invalid_bin_op(),
-            },
-            (Value::Int(a), Value::Int(b)) => match op {
-                BinaryOp::Gt => Value::Bool(a > b),
-                BinaryOp::Ge => Value::Bool(a >= b),
-                BinaryOp::Lt => Value::Bool(a < b),
-                BinaryOp::Le => Value::Bool(a <= b),
-                BinaryOp::Eq => Value::Bool(a == b),
-                BinaryOp::Ne => Value::Bool(a != b),
-                BinaryOp::Add => Value::Int(a + b),
-                BinaryOp::Sub => Value::Int(a - b),
-                BinaryOp::Mul => Value::Int(a * b),
-                BinaryOp::Div => Value::Int(a / b),
-                BinaryOp::Mod => Value::Int(a % b),
-                BinaryOp::Xor => Value::Int(a ^ b),
-                BinaryOp::BitAnd => Value::Int(a & b),
-                BinaryOp::BitOr => Value::Int(a | b),
-                _ => invalid_bin_op(),
-            },
-            (Value::Int(a), Value::Float(b)) | (Value::Float(b), Value::Int(a)) => match op {
-                BinaryOp::Gt => Value::Bool((a as f64) > b),
-                BinaryOp::Ge => Value::Bool((a as f64) >= b),
-                BinaryOp::Lt => Value::Bool((a as f64) < b),
-                BinaryOp::Le => Value::Bool((a as f64) <= b),
-                BinaryOp::Eq => Value::Bool((a as f64) == b),
-                BinaryOp::Ne => Value::Bool((a as f64) != b),
-                BinaryOp::Add => Value::Float((a as f64) + b),
-                BinaryOp::Sub => Value::Float((a as f64) - b),
-                BinaryOp::Mul => Value::Float((a as f64) * b),
-                BinaryOp::Div => Value::Float((a as f64) / b),
-                BinaryOp::Mod => Value::Float((a as f64) % b),
-                _ => invalid_bin_op(),
-            },
-            (a, Value::String(b)) => Value::String(format!("{a}{b}")),
-            (Value::String(a), b) => Value::String(format!("{a}{b}")),
-            (Value::Float(a), Value::Float(b)) => match op {
-                BinaryOp::Gt => Value::Bool(a > b),
-                BinaryOp::Ge => Value::Bool(a >= b),
-                BinaryOp::Lt => Value::Bool(a < b),
-                BinaryOp::Le => Value::Bool(a <= b),
-                BinaryOp::Eq => Value::Bool(a == b),
-                BinaryOp::Ne => Value::Bool(a != b),
-                BinaryOp::Add => Value::Float(a + b),
-                BinaryOp::Sub => Value::Float(a - b),
-                BinaryOp::Mul => Value::Float(a * b),
-                BinaryOp::Div => Value::Float(a / b),
-                BinaryOp::Mod => Value::Float(a % b),
-                _ => invalid_bin_op(),
-            },
+        match (left, right) {
+            // Binary operation over numbers
+            (Value::Int(a), Value::Int(b)) => self.int_bin_op(span, a, b, op),
+            (Value::Int(a), Value::Float(b)) => self.float_bin_op(span, a as f64, b, op),
+            (Value::Float(a), Value::Int(b)) => self.float_bin_op(span, a, b as f64, op),
+            (Value::Float(a), Value::Float(b)) => self.float_bin_op(span, a, b as f64, op),
+
+            // Binary operation over bools
+            (Value::Bool(a), Value::Bool(b)) => self.bool_bin_op(span, a, b, op),
+
+            // Binary operation over strings
+            (Value::String(a), Value::String(b)) => self.string_bin_op(span, a, b, op),
+
+            // Binary operation over any other values
             (a, b) => match op {
-                BinaryOp::Eq => Value::Bool(a == b),
-                BinaryOp::Ne => Value::Bool(a != b),
-                _ => invalid_bin_op(),
+                BinOp::Eq => Value::Bool(a == b),
+                BinOp::Ne => Value::Bool(a != b),
+                _ => invalid_bin_op(a, b),
             },
         }
     }
 
     /// Evaluates binary expression
-    pub(crate) fn eval_binary(
+    pub(crate) fn eval_bin(
         &mut self,
         span: &Span,
-        op: &BinaryOp,
+        op: BinOp,
         left: &Expression,
         right: &Expression,
     ) -> Flow<Value> {
@@ -140,15 +204,15 @@ impl<'io> Interpreter<'io> {
         let right = self.eval(right)?;
 
         // Performing bin op
-        Ok(self.perform_binary_op(span, left, right, op))
+        Ok(self.perform_bin_op(span, left, right, op))
     }
 
     /// Performs unary operation over values
-    pub(crate) fn perform_unary_op(&self, span: &Span, value: Value, op: &UnaryOp) -> Value {
+    pub(crate) fn perform_unary_op(&self, span: &Span, value: Value, op: UnaryOp) -> Value {
         // Invalid unary op
         let invalid_unary_op = || {
             bail!(RuntimeError::InvalidUnaryOp {
-                op: op.clone(),
+                op,
                 value: value.clone(),
                 src: span.0.clone(),
                 span: span.1.clone().into()
@@ -177,7 +241,7 @@ impl<'io> Interpreter<'io> {
     pub(crate) fn eval_unary(
         &mut self,
         span: &Span,
-        op: &UnaryOp,
+        op: UnaryOp,
         value: &Expression,
     ) -> Flow<Value> {
         // Evaluating value
@@ -500,8 +564,8 @@ impl<'io> Interpreter<'io> {
                 op,
                 left,
                 right,
-            } => self.eval_binary(span, op, left, right),
-            Expression::Unary { span, op, value } => self.eval_unary(span, op, value),
+            } => self.eval_bin(span, *op, left, right),
+            Expression::Unary { span, op, value } => self.eval_unary(span, *op, value),
             Expression::Variable { span, name } => self.eval_variable(span, name),
             Expression::Field {
                 span,

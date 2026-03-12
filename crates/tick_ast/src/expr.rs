@@ -1,6 +1,6 @@
 /// Imports
 use crate::{
-    atom::{BinaryOp, Lit, UnaryOp},
+    atom::{BinOp, Lit, UnaryOp},
     stmt::Block,
 };
 use tick_lex::token::Span;
@@ -33,7 +33,7 @@ pub enum Expression {
     // Binary operation
     Bin {
         span: Span,
-        op: BinaryOp,
+        op: BinOp,
         left: Box<Expression>,
         right: Box<Expression>,
     },

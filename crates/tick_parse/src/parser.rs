@@ -3,7 +3,7 @@ use crate::errors::ParseError;
 use miette::NamedSource;
 use std::sync::Arc;
 use tick_ast::{
-    atom::{AssignOp, BinaryOp, Function, Lit, UnaryOp},
+    atom::{AssignOp, BinOp, Function, Lit, UnaryOp},
     expr::{Expression, Range},
     stmt::{Block, Statement, UsageKind},
 };
@@ -692,9 +692,9 @@ impl<'s> Parser<'s> {
             left = Expression::Bin {
                 span: start_span.clone() + end_span,
                 op: match op.kind {
-                    TokenKind::Star => BinaryOp::Mul,
-                    TokenKind::Slash => BinaryOp::Div,
-                    TokenKind::Percent => BinaryOp::Mod,
+                    TokenKind::Star => BinOp::Mul,
+                    TokenKind::Slash => BinOp::Div,
+                    TokenKind::Percent => BinOp::Mod,
                     _ => unreachable!(),
                 },
                 left: Box::new(left),
@@ -715,8 +715,8 @@ impl<'s> Parser<'s> {
             left = Expression::Bin {
                 span: start_span.clone() + end_span,
                 op: match op.kind {
-                    TokenKind::Plus => BinaryOp::Add,
-                    TokenKind::Minus => BinaryOp::Sub,
+                    TokenKind::Plus => BinOp::Add,
+                    TokenKind::Minus => BinOp::Sub,
                     _ => unreachable!(),
                 },
                 left: Box::new(left),
@@ -741,10 +741,10 @@ impl<'s> Parser<'s> {
             left = Expression::Bin {
                 span: start_span.clone() + end_span,
                 op: match op.kind {
-                    TokenKind::Ge => BinaryOp::Ge,
-                    TokenKind::Gt => BinaryOp::Gt,
-                    TokenKind::Le => BinaryOp::Le,
-                    TokenKind::Lt => BinaryOp::Lt,
+                    TokenKind::Ge => BinOp::Ge,
+                    TokenKind::Gt => BinOp::Gt,
+                    TokenKind::Le => BinOp::Le,
+                    TokenKind::Lt => BinOp::Lt,
                     _ => unreachable!(),
                 },
                 left: Box::new(left),
@@ -765,8 +765,8 @@ impl<'s> Parser<'s> {
             left = Expression::Bin {
                 span: start_span.clone() + end_span,
                 op: match op.kind {
-                    TokenKind::DoubleEq => BinaryOp::Eq,
-                    TokenKind::BangEq => BinaryOp::Ne,
+                    TokenKind::DoubleEq => BinOp::Eq,
+                    TokenKind::BangEq => BinOp::Ne,
                     _ => unreachable!(),
                 },
                 left: Box::new(left),
@@ -786,7 +786,7 @@ impl<'s> Parser<'s> {
             let end_span = self.prev().span.clone();
             left = Expression::Bin {
                 span: start_span.clone() + end_span,
-                op: BinaryOp::BitAnd,
+                op: BinOp::BitAnd,
                 left: Box::new(left),
                 right: Box::new(right),
             }
@@ -804,7 +804,7 @@ impl<'s> Parser<'s> {
             let end_span = self.prev().span.clone();
             left = Expression::Bin {
                 span: start_span.clone() + end_span,
-                op: BinaryOp::Xor,
+                op: BinOp::Xor,
                 left: Box::new(left),
                 right: Box::new(right),
             };
@@ -822,7 +822,7 @@ impl<'s> Parser<'s> {
             let end_span = self.prev().span.clone();
             left = Expression::Bin {
                 span: start_span.clone() + end_span,
-                op: BinaryOp::BitOr,
+                op: BinOp::BitOr,
                 left: Box::new(left),
                 right: Box::new(right),
             }
@@ -840,7 +840,7 @@ impl<'s> Parser<'s> {
             let end_span = self.prev().span.clone();
             left = Expression::Bin {
                 span: start_span.clone() + end_span,
-                op: BinaryOp::And,
+                op: BinOp::And,
                 left: Box::new(left),
                 right: Box::new(right),
             }
@@ -858,7 +858,7 @@ impl<'s> Parser<'s> {
             let end_span = self.prev().span.clone();
             left = Expression::Bin {
                 span: start_span.clone() + end_span,
-                op: BinaryOp::Or,
+                op: BinOp::Or,
                 left: Box::new(left),
                 right: Box::new(right),
             }

@@ -9,4 +9,4 @@ let list2 = [5, 6, "true", false];
 list2.pop();
 list2.remove(1);
 println(list2.to_string());
-println("random: " + list2.choice());
+println("random: " + str_of(list2.choice()));

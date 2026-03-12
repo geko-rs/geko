@@ -11,7 +11,7 @@ use crate::{
 };
 use std::{cell::RefCell, collections::HashMap};
 use tick_ast::{
-    atom::{self, AssignOp, BinaryOp},
+    atom::{self, AssignOp, BinOp},
     expr::Expression,
     stmt::{Block, Statement, UsageKind},
 };
@@ -177,21 +177,21 @@ impl<'io> Interpreter<'io> {
                 let value = self.eval(value)?;
 
                 // Performing operation
-                let value = self.perform_binary_op(
+                let value = self.perform_bin_op(
                     span,
                     old,
                     value,
-                    &match other {
+                    match other {
                         // Note: because of previous clause
                         AssignOp::Assign => unreachable!(),
-                        AssignOp::Add => BinaryOp::Add,
-                        AssignOp::Sub => BinaryOp::Sub,
-                        AssignOp::Mul => BinaryOp::Mul,
-                        AssignOp::Div => BinaryOp::Div,
-                        AssignOp::Mod => BinaryOp::Mod,
-                        AssignOp::BitAnd => BinaryOp::BitAnd,
-                        AssignOp::BitOr => BinaryOp::BitOr,
-                        AssignOp::Xor => BinaryOp::Xor,
+                        AssignOp::Add => BinOp::Add,
+                        AssignOp::Sub => BinOp::Sub,
+                        AssignOp::Mul => BinOp::Mul,
+                        AssignOp::Div => BinOp::Div,
+                        AssignOp::Mod => BinOp::Mod,
+                        AssignOp::BitAnd => BinOp::BitAnd,
+                        AssignOp::BitOr => BinOp::BitOr,
+                        AssignOp::Xor => BinOp::Xor,
                     },
                 );
 
@@ -246,21 +246,21 @@ impl<'io> Interpreter<'io> {
                 let value = self.eval(value)?;
 
                 // Performing operation
-                let value = self.perform_binary_op(
+                let value = self.perform_bin_op(
                     span,
                     old,
                     value,
-                    &match other {
+                    match other {
                         // Note: because of previous clause
                         AssignOp::Assign => unreachable!(),
-                        AssignOp::Add => BinaryOp::Add,
-                        AssignOp::Sub => BinaryOp::Sub,
-                        AssignOp::Mul => BinaryOp::Mul,
-                        AssignOp::Div => BinaryOp::Div,
-                        AssignOp::Mod => BinaryOp::Mod,
-                        AssignOp::BitAnd => BinaryOp::BitAnd,
-                        AssignOp::BitOr => BinaryOp::BitOr,
-                        AssignOp::Xor => BinaryOp::Xor,
+                        AssignOp::Add => BinOp::Add,
+                        AssignOp::Sub => BinOp::Sub,
+                        AssignOp::Mul => BinOp::Mul,
+                        AssignOp::Div => BinOp::Div,
+                        AssignOp::Mod => BinOp::Mod,
+                        AssignOp::BitAnd => BinOp::BitAnd,
+                        AssignOp::BitOr => BinOp::BitOr,
+                        AssignOp::Xor => BinOp::Xor,
                     },
                 );
 

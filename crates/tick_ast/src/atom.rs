@@ -19,7 +19,7 @@ pub enum AssignOp {
 
 /// Binary operator
 #[derive(Debug, Clone, Copy)]
-pub enum BinaryOp {
+pub enum BinOp {
     Add,    // +
     Sub,    // -
     Mul,    // *
@@ -39,31 +39,31 @@ pub enum BinaryOp {
 }
 
 /// Display implementation
-impl Display for BinaryOp {
+impl Display for BinOp {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            BinaryOp::Add => write!(f, "+"),
-            BinaryOp::Sub => write!(f, "-"),
-            BinaryOp::Mul => write!(f, "*"),
-            BinaryOp::Div => write!(f, "/"),
-            BinaryOp::Mod => write!(f, "%"),
-            BinaryOp::And => write!(f, "&&"),
-            BinaryOp::Or => write!(f, "||"),
-            BinaryOp::Gt => write!(f, ">"),
-            BinaryOp::Ge => write!(f, ">="),
-            BinaryOp::Lt => write!(f, "<"),
-            BinaryOp::Le => write!(f, "<="),
-            BinaryOp::Eq => write!(f, "=="),
-            BinaryOp::Ne => write!(f, "!="),
-            BinaryOp::BitAnd => write!(f, "&"),
-            BinaryOp::BitOr => write!(f, "|"),
-            BinaryOp::Xor => write!(f, "^"),
+            BinOp::Add => write!(f, "+"),
+            BinOp::Sub => write!(f, "-"),
+            BinOp::Mul => write!(f, "*"),
+            BinOp::Div => write!(f, "/"),
+            BinOp::Mod => write!(f, "%"),
+            BinOp::And => write!(f, "&&"),
+            BinOp::Or => write!(f, "||"),
+            BinOp::Gt => write!(f, ">"),
+            BinOp::Ge => write!(f, ">="),
+            BinOp::Lt => write!(f, "<"),
+            BinOp::Le => write!(f, "<="),
+            BinOp::Eq => write!(f, "=="),
+            BinOp::Ne => write!(f, "!="),
+            BinOp::BitAnd => write!(f, "&"),
+            BinOp::BitOr => write!(f, "|"),
+            BinOp::Xor => write!(f, "^"),
         }
     }
 }
 
 /// Unary operator
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub enum UnaryOp {
     Neg,  // -
     Bang, // !

@@ -41,6 +41,16 @@ pub fn readln() -> Ref<Native> {
     })
 }
 
+/// String of definition
+pub fn str_of() -> Ref<Native> {
+    Ref::new(Native {
+        arity: 1,
+        function: Box::new(|_, _, values| {
+            Value::String(values.get(0).cloned().unwrap().to_string())
+        }),
+    })
+}
+
 /// Provides env
 pub fn provide_env() -> EnvRef {
     let mut env = Environment::default();
@@ -48,6 +58,7 @@ pub fn provide_env() -> EnvRef {
     env.force_define("print", Value::Callable(Callable::Native(print())));
     env.force_define("println", Value::Callable(Callable::Native(println())));
     env.force_define("readln", Value::Callable(Callable::Native(readln())));
+    env.force_define("str_of", Value::Callable(Callable::Native(str_of())));
     env.force_define("List", Value::Type(list::provide_type()));
 
     Rc::new(RefCell::new(env))

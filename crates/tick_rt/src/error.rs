@@ -3,7 +3,7 @@ use crate::rt::value::Value;
 use miette::{Diagnostic, NamedSource, SourceSpan};
 use std::sync::Arc;
 use thiserror::Error;
-use tick_ast::atom::{BinaryOp, UnaryOp};
+use tick_ast::atom::{BinOp, UnaryOp};
 
 /// Unsafe `Send` + `Sync` implementations.
 unsafe impl Send for Value {}
@@ -43,10 +43,10 @@ pub enum RuntimeError {
         span: SourceSpan,
     },
     /// Invalid binary op
-    #[error("couldn't use `{op}` with {a} and {b}")]
-    #[diagnostic(code(rt::invalid_binary_op))]
-    InvalidBinaryOp {
-        op: BinaryOp,
+    #[error("couldn't use `{op}` with `{a}` and `{b}`")]
+    #[diagnostic(code(rt::invalid_bin_op))]
+    InvalidBinOp {
+        op: BinOp,
         a: Value,
         b: Value,
         #[source_code]
@@ -55,7 +55,7 @@ pub enum RuntimeError {
         span: SourceSpan,
     },
     /// Invalid unary op
-    #[error("couldn't use `{op}` with {value}")]
+    #[error("couldn't use `{op}` with `{value}`")]
     #[diagnostic(code(rt::invalid_unary_op))]
     InvalidUnaryOp {
         op: UnaryOp,
@@ -65,8 +65,17 @@ pub enum RuntimeError {
         #[label("here...")]
         span: SourceSpan,
     },
+    /// Zero division error
+    #[error("division by zero is invalid")]
+    #[diagnostic(code(rt::zero_division))]
+    ZeroDivision {
+        #[source_code]
+        src: Arc<NamedSource<String>>,
+        #[label("here...")]
+        span: SourceSpan,
+    },
     /// Couldn't resolve fields
-    #[error("couldn't resolve fields in {value}")]
+    #[error("couldn't resolve fields in `{value}`")]
     #[diagnostic(code(rt::could_not_resolve_fields))]
     CouldNotResolveFields {
         value: Value,
@@ -76,7 +85,7 @@ pub enum RuntimeError {
         span: SourceSpan,
     },
     /// Couldn't call a value
-    #[error("couldn't call {value}")]
+    #[error("couldn't call `{value}`")]
     #[diagnostic(code(rt::could_not_call))]
     CouldNotCall {
         value: Value,
@@ -86,7 +95,7 @@ pub enum RuntimeError {
         span: SourceSpan,
     },
     /// Expected boolean value
-    #[error("expected bool value. got {value}")]
+    #[error("expected bool value. got `{value}`")]
     #[diagnostic(code(rt::expected_bool_value))]
     ExpectedBool {
         value: Value,
