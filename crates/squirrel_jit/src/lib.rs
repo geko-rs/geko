@@ -234,7 +234,7 @@ impl<'ctx> FunctionContext<'ctx> {
 
     // Translates return into Cranelift IR
     fn translate_return(&mut self, expr: &Option<Expression>) -> Result<(), Error> {
-        // If last block already contains terminator
+        // If current block already has terminator
         if self.has_terminator() {
             return Err(Error::NoJitEligible);
         }
@@ -258,6 +258,30 @@ impl<'ctx> FunctionContext<'ctx> {
             }
             (_, _) => Err(Error::NoJitEligible),
         }
+    }
+
+    // Translates continue into Cranelift IR
+    fn translate_continue(&mut self) -> Result<(), Error> {
+        // If current block already has terminator
+        if self.has_terminator() {
+            return Err(Error::NoJitEligible);
+        }
+
+        let (continue_block, _) = self.loops.last().ok_or(Error::NoJitEligible)?;
+        self.builder.ins().jump(*continue_block, &[]);
+        Ok(())
+    }
+
+    // Translates break into Cranelift IR
+    fn translate_break(&mut self) -> Result<(), Error> {
+        // If current block already has terminator
+        if self.has_terminator() {
+            return Err(Error::NoJitEligible);
+        }
+
+        let (_, break_block) = self.loops.last().ok_or(Error::NoJitEligible)?;
+        self.builder.ins().jump(*break_block, &[]);
+        Ok(())
     }
 
     // Translates block into Cranelift IR
@@ -379,16 +403,8 @@ impl<'ctx> FunctionContext<'ctx> {
                 name, op, value, ..
             } => self.translate_assign(name, *op, value),
             Statement::Return { expr, .. } => self.translate_return(expr),
-            Statement::Continue(_) => {
-                let (continue_block, _) = self.loops.last().ok_or(Error::NoJitEligible)?;
-                self.builder.ins().jump(*continue_block, &[]);
-                Ok(())
-            }
-            Statement::Break(_) => {
-                let (_, break_block) = self.loops.last().ok_or(Error::NoJitEligible)?;
-                self.builder.ins().jump(*break_block, &[]);
-                Ok(())
-            }
+            Statement::Continue(_) => self.translate_continue(),
+            Statement::Break(_) => self.translate_break(),
             Statement::Expr(expr) => {
                 self.translate_expr(expr)?;
                 Ok(())
