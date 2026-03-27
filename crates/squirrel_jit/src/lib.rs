@@ -3,11 +3,12 @@ use cranelift::{
     codegen,
     prelude::{
         self, AbiParam, Configurable, FloatCC, FunctionBuilder, FunctionBuilderContext,
-        InstBuilder, IntCC, settings, types,
+        InstBuilder, IntCC, Value, settings, types,
     },
 };
+use cranelift_codegen::ir::FuncRef;
 use cranelift_jit::{JITBuilder, JITModule};
-use cranelift_module::{Linkage, Module};
+use cranelift_module::{FuncId, Linkage, Module};
 use squirrel_ast::{
     atom::{AssignOp, BinOp, Lit, UnaryOp},
     expr::Expression,
@@ -82,6 +83,9 @@ pub struct FunctionContext<'ctx> {
 
     /// Function signature
     signature: Signature,
+
+    /// Recursion function reference
+    rec_ref: FuncRef,
 }
 
 /// Function context implementation
@@ -100,6 +104,25 @@ impl<'ctx> FunctionContext<'ctx> {
     /// Looks up variable
     fn lookup_var(&self, name: &str) -> Option<Variable> {
         self.variables.get(name).cloned()
+    }
+
+    /// Returns true if block has terminator
+    fn has_terminator(&self) -> bool {
+        // Matching current block
+        match self.builder.current_block() {
+            // Matching last block instruction
+            Some(block) => match self.builder.func.layout.last_inst(block) {
+                // Empty block contains no terminator
+                None => false,
+                // Non-empty block may contain terminator
+                Some(inst) => {
+                    // Check if the last instruction is a terminator
+                    self.builder.func.dfg.insts[inst].opcode().is_terminator()
+                }
+            },
+            // If no block
+            None => false,
+        }
     }
 
     /// Translates AST into Cranelift IR
@@ -211,6 +234,11 @@ impl<'ctx> FunctionContext<'ctx> {
 
     // Translates return into Cranelift IR
     fn translate_return(&mut self, expr: &Option<Expression>) -> Result<(), Error> {
+        // If last block already contains terminator
+        if self.has_terminator() {
+            return Err(Error::NoJitEligible);
+        }
+
         // Matching expression and return type
         match (expr, self.signature.ret) {
             (Some(expr), Some(ret_typ)) => {
@@ -290,7 +318,9 @@ impl<'ctx> FunctionContext<'ctx> {
             self.builder.switch_to_block(block);
 
             self.translate_block(then)?;
-            self.builder.ins().jump(exit, &[]);
+            if !self.has_terminator() {
+                self.builder.ins().jump(exit, &[]);
+            }
 
             block
         };
@@ -305,7 +335,9 @@ impl<'ctx> FunctionContext<'ctx> {
                     self.translate_stmt(else_)?;
                 }
                 None => {
-                    self.builder.ins().jump(exit, &[]);
+                    if !self.has_terminator() {
+                        self.builder.ins().jump(exit, &[]);
+                    }
                 }
             }
 
@@ -578,6 +610,53 @@ impl<'ctx> FunctionContext<'ctx> {
         Ok((typ, val))
     }
 
+    /// Tries transalate call if it is a recursion call into Cranelift IR
+    fn try_translate_call(
+        &mut self,
+        what: &Expression,
+        args: &[Expression],
+    ) -> Result<(Typ, prelude::Value), Error> {
+        match what {
+            // Todo: replace with `if let` guard in `rust 1.95`
+            Expression::Variable { name, .. }
+                if self.lookup_var(name).is_none() && &self.signature.name == name.as_str() =>
+            {
+                // Preparing function arguments
+                let args: Vec<_> = args
+                    .iter()
+                    .map(|e| self.translate_expr(e))
+                    .collect::<Result<Vec<_>, _>>()?;
+
+                // Checking signature
+                self.signature
+                    .params
+                    .iter()
+                    .zip(args.iter())
+                    .try_for_each(|(p, a)| {
+                        if *p.1 == a.0 {
+                            Ok(())
+                        } else {
+                            Err(Error::NoJitEligible)
+                        }
+                    })?;
+
+                // Generating function call
+                let inst = self.builder.ins().call(
+                    self.rec_ref,
+                    &args.iter().map(|(_, v)| *v).collect::<Vec<_>>(),
+                );
+                let result = self.builder.inst_results(inst);
+
+                match self.signature.ret {
+                    Some(typ) => Ok((typ, result[0])),
+                    None => Err(Error::NoJitEligible),
+                }
+            }
+            // Unsupported call
+            _ => Err(Error::NoJitEligible),
+        }
+    }
+
     /// Translates expression into Cranelift IR
     fn translate_expr(&mut self, expr: &Expression) -> Result<(Typ, prelude::Value), Error> {
         match expr {
@@ -590,8 +669,10 @@ impl<'ctx> FunctionContext<'ctx> {
                 Some(var) => Ok((var.typ, self.builder.use_var(var.variable))),
                 None => Err(Error::NoJitEligible),
             },
+            // Recursing call
+            Expression::Call { what, args, .. } => self.try_translate_call(what, args),
+            // Unsupported operations
             Expression::Field { .. }
-            | Expression::Call { .. }
             | Expression::List { .. }
             | Expression::Fn { .. }
             | Expression::Range { .. } => Err(Error::NoJitEligible),
@@ -667,6 +748,18 @@ impl CodeGenerator {
                 .push(AbiParam::new(Self::map_type(&ret)));
         }
 
+        // Declaring function in the module
+        let id = self
+            .jit_module
+            .declare_function(&sig.name, Linkage::Export, &self.context.func.signature)
+            .map_err(|_| Error::ModuleDeclarationFailure)?;
+
+        // Declaring function in function for recursion calls
+        let rec_ref = self
+            .jit_module
+            .declare_func_in_func(id, &mut self.context.func);
+
+        // Preparing entry block and function builder
         let mut builder = FunctionBuilder::new(&mut self.context.func, &mut self.builder_context);
         let entry_block = builder.create_block();
 
@@ -676,6 +769,7 @@ impl CodeGenerator {
             variables: HashMap::new(),
             loops: Vec::new(),
             signature: sig.clone(),
+            rec_ref: rec_ref,
         };
 
         // Preparing entry block
@@ -694,13 +788,12 @@ impl CodeGenerator {
 
         // Translating ast into cranelift ir
         context.translate(body)?;
-        context.builder.finalize();
 
-        // Declaring function in the module
-        let id = self
-            .jit_module
-            .declare_function(&sig.name, Linkage::Export, &self.context.func.signature)
-            .map_err(|_| Error::ModuleDeclarationFailure)?;
+        // Sealing all blocks
+        context.builder.seal_all_blocks();
+
+        // Finalizing building function
+        context.builder.finalize();
 
         // Defining function in the module
         self.jit_module
