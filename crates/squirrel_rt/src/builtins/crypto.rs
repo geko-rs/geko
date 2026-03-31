@@ -9,7 +9,7 @@ use crate::{
 };
 use base64::{Engine, prelude::BASE64_STANDARD};
 use md5::{Digest, Md5};
-use sha1::{Digest as Sha1Digest, Sha1};
+use sha1::{Sha1};
 use sha2::{Sha224, Sha256, Sha384, Sha512};
 use std::{cell::RefCell, rc::Rc};
 
