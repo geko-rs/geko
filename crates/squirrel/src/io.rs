@@ -26,10 +26,18 @@ impl IO for CliIO {
 
     /// Read implementation
     fn read(&self, path: &Utf8PathBuf) -> String {
-        // Reading module
+        // Reading file
         match fs::read_to_string(path) {
             Ok(text) => text,
             Err(_) => bail!(IOError::FileNotFound(path.clone())),
+        }
+    }
+
+    /// Write implementation
+    fn write(&self, path: &Utf8PathBuf, text: String) {
+        // Writing to file
+        if let Err(_) = fs::write(path, text) {
+            bail!(IOError::FileNotFound(path.clone()))
         }
     }
 

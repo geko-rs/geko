@@ -12,7 +12,7 @@ Nightly builds are available and can be run on **stable Rust**, giving you a cha
 
 #### 🔦 ToDo
 - [ ] `os` library
-- [ ] `fs` library
+- [x] `fs` library
 - [ ] `time` library
 - [x] update `math` library
 - [x] implement `random` in `math` library

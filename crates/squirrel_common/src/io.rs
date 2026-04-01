@@ -36,6 +36,9 @@ pub trait IO {
     /// Reads file
     fn read(&self, path: &Utf8PathBuf) -> String;
 
+    /// Writes file
+    fn write(&self, path: &Utf8PathBuf, text: String);
+
     /// Resolves path by inserting `cwd`.
     ///
     /// Returns `None` if path isn't exists or fs isn't available.

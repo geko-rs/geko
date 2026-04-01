@@ -756,6 +756,7 @@ name = "squirrel_rt"
 version = "0.1.0"
 dependencies = [
  "base64",
+ "camino",
  "hex",
  "md-5",
  "miette",

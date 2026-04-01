@@ -1,6 +1,8 @@
 /// Modules
 mod core;
+mod crypto;
 mod env;
+mod fs;
 mod is;
 mod list;
 mod math;
@@ -8,7 +10,6 @@ mod mem;
 mod mods;
 mod process;
 mod utils;
-mod crypto;
 
 /// Imports
 use crate::{

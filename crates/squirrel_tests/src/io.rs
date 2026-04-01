@@ -30,6 +30,11 @@ impl IO for TestIO {
         bail!(IOError::NotSupported("read"));
     }
 
+    /// Write implementation
+    fn write(&self, _: &Utf8PathBuf, _: String) {
+        bail!(IOError::NotSupported("write"));
+    }
+
     /// Resolve implementation
     fn resolve(&self, _: &str) -> Option<Utf8PathBuf> {
         None
