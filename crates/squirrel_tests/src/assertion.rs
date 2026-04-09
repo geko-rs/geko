@@ -17,11 +17,29 @@ pub fn prepare_miette() {
 /// Asserts tokens
 #[macro_export]
 macro_rules! assert_tokens {
-    ($text:expr, $tokens:expr) => {
-        $crate::assertion::prepare_miette();
-        let src = std::sync::Arc::new(miette::NamedSource::new("test.ql", $text.to_string()));
-        let lexer = squirrel_lex::lexer::Lexer::new(src, $text);
-        assert_eq!(lexer.map(|tk| tk.kind).collect::<Vec<_>>(), $tokens);
+    ($text:expr) => {
+        let result = match std::panic::catch_unwind(|| {
+            $crate::assertion::prepare_miette();
+            let src = std::sync::Arc::new(miette::NamedSource::new("test.ql", $text.to_string()));
+            let lexer = squirrel_lex::lexer::Lexer::new(src.clone(), $text);
+            format!("{:#?}", lexer.collect::<Vec<squirrel_lex::token::Token>>())
+        }) {
+            Ok(result) => result,
+            Err(err) => {
+                let panic_str = if let Some(s) = err.downcast_ref::<&str>() {
+                    (*s).to_string()
+                } else if let Some(s) = err.downcast_ref::<String>() {
+                    s.clone()
+                } else {
+                    "<failed to retrieve panic message>".to_string()
+                };
+                let re = regex::Regex::new(r"\x1b\[[0-9;]*m").unwrap();
+                let cleaned = re.replace_all(&panic_str, "").to_string();
+                format!("{}", cleaned)
+            }
+        };
+
+        insta::assert_snapshot!(result);
     };
 }
 

@@ -25,6 +25,15 @@ pub enum LexError<'a> {
         #[label("close string quotes by appending missed quote `\"`.")]
         span: SourceSpan,
     },
+    /// Unterminated comment
+    #[error("found unterminated comment.")]
+    #[diagnostic(code(lex::unterminated_comment))]
+    UnterminatedComment {
+        #[source_code]
+        src: Arc<NamedSource<String>>,
+        #[label("use `]#` to terminate comment")]
+        span: SourceSpan,
+    },
     /// Invalid float
     #[error("invalid float number.")]
     #[diagnostic(code(lex::invalid_float_number))]

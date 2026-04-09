@@ -1,0 +1,5 @@
+---
+source: crates/squirrel_tests/src/lex.rs
+expression: result
+---
+[]

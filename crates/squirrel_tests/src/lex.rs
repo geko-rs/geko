@@ -1,35 +1,14 @@
 /// Imports
 use crate::assert_tokens;
-use squirrel_lex::token::TokenKind;
 
 #[test]
 pub fn test_lex_1() {
-    assert_tokens!(
-        "id 12345 \"hello\"",
-        &[TokenKind::Id, TokenKind::Number, TokenKind::String]
-    );
+    assert_tokens!("id 12345 \"hello\"");
 }
 
 #[test]
 pub fn test_lex_2() {
-    assert_tokens!(
-        "use as for while class fn in if else let return continue break",
-        &[
-            TokenKind::Use,
-            TokenKind::As,
-            TokenKind::For,
-            TokenKind::While,
-            TokenKind::Class,
-            TokenKind::Fn,
-            TokenKind::In,
-            TokenKind::If,
-            TokenKind::Else,
-            TokenKind::Let,
-            TokenKind::Return,
-            TokenKind::Continue,
-            TokenKind::Break
-        ]
-    );
+    assert_tokens!("use as for while class fn in if else let return continue break trait");
 }
 
 #[test]
@@ -41,8 +20,7 @@ pub fn test_lex_3() {
             multiline
             comment
         ]#
-        "#,
-        &[]
+        "#
     );
 }
 
@@ -53,34 +31,16 @@ pub fn test_lex_4() {
         , . & && | || ^ !
         + * - += -= *= /= != |= &=
         ^= ; ( ) { } [ ]
-        "#,
-        &[
-            TokenKind::Comma,
-            TokenKind::Dot,
-            TokenKind::Ampersand,
-            TokenKind::DoubleAmp,
-            TokenKind::Bar,
-            TokenKind::DoubleBar,
-            TokenKind::Caret,
-            TokenKind::Bang,
-            TokenKind::Plus,
-            TokenKind::Star,
-            TokenKind::Minus,
-            TokenKind::PlusEq,
-            TokenKind::MinusEq,
-            TokenKind::StarEq,
-            TokenKind::SlashEq,
-            TokenKind::BangEq,
-            TokenKind::BarEq,
-            TokenKind::AmpersandEq,
-            TokenKind::CaretEq,
-            TokenKind::Semi,
-            TokenKind::Lparen,
-            TokenKind::Rparen,
-            TokenKind::Lbrace,
-            TokenKind::Rbrace,
-            TokenKind::Lbracket,
-            TokenKind::Rbracket
-        ]
+        "#
+    );
+}
+
+// Note: should bail
+#[test]
+pub fn test_lex_5() {
+    assert_tokens!(
+        r#"
+        #[ unterminated comment
+        "#
     );
 }

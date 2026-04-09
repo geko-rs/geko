@@ -337,11 +337,23 @@ impl<'s> Lexer<'s> {
     /// Skips multiline comment
     fn skip_multiline_comment(&mut self) {
         // #[
+        let start = self.idx;
         self.advance();
         self.advance();
+
+        // Skipping comment
         while !(self.current == Some(']') && self.next == Some('#')) {
-            self.advance();
+            // If eof -> reporting error
+            if self.is_eof() {
+                bail!(LexError::UnterminatedComment {
+                    src: self.source.clone(),
+                    span: (start..self.idx).into()
+                })
+            } else {
+                self.advance();
+            }
         }
+
         // ]#
         self.advance();
         self.advance();
