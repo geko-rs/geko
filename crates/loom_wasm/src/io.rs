@@ -18,7 +18,7 @@ pub struct WasmIO;
 impl IO for WasmIO {
     // Input implementation
     fn input(&self) -> String {
-        js_input()
+        js_input().trim_end().to_string()
     }
 
     // Output implementation

@@ -16,7 +16,7 @@ impl IO for CliIO {
     fn input(&self) -> String {
         let mut line = String::new();
         let _ = io::stdin().read_line(&mut line);
-        line
+        line.trim_end().to_string()
     }
 
     /// Output implementation
