@@ -4,30 +4,31 @@ expression: result
 ---
 Block {
     span: Span(
-        9..44,
+        9..39,
     ),
     statements: [
-        Let {
+        Assign {
             span: Span(
-                9..23,
+                9..20,
             ),
             name: "id",
+            op: Define,
             value: Variable {
                 span: Span(
-                    18..23,
+                    15..20,
                 ),
                 name: "value",
             },
         },
         Assign {
             span: Span(
-                33..43,
+                29..39,
             ),
             name: "id",
             op: Assign,
             value: Variable {
                 span: Span(
-                    38..43,
+                    34..39,
                 ),
                 name: "value",
             },

@@ -4,7 +4,7 @@ expression: result
 ---
 Block {
     span: Span(
-        9..147,
+        9..140,
     ),
     statements: [
         Assign {
@@ -22,78 +22,78 @@ Block {
         },
         Assign {
             span: Span(
-                30..41,
+                29..40,
             ),
             name: "id",
             op: Sub,
             value: Variable {
                 span: Span(
-                    36..41,
+                    35..40,
                 ),
                 name: "value",
             },
         },
         Assign {
             span: Span(
-                51..62,
+                49..60,
             ),
             name: "id",
             op: Mul,
             value: Variable {
                 span: Span(
-                    57..62,
+                    55..60,
                 ),
                 name: "value",
             },
         },
         Assign {
             span: Span(
-                72..83,
+                69..80,
             ),
             name: "id",
             op: Div,
             value: Variable {
                 span: Span(
-                    78..83,
+                    75..80,
                 ),
                 name: "value",
             },
         },
         Assign {
             span: Span(
-                93..104,
+                89..100,
             ),
             name: "id",
             op: Mod,
             value: Variable {
                 span: Span(
-                    99..104,
+                    95..100,
                 ),
                 name: "value",
             },
         },
         Assign {
             span: Span(
-                114..125,
+                109..120,
             ),
             name: "id",
             op: BitAnd,
             value: Variable {
                 span: Span(
-                    120..125,
+                    115..120,
                 ),
                 name: "value",
             },
         },
         Assign {
             span: Span(
-                135..146,
+                129..140,
             ),
             name: "id",
             op: BitOr,
             value: Variable {
                 span: Span(
-                    141..146,
+                    135..140,
                 ),
                 name: "value",
             },

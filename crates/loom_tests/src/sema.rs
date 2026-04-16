@@ -6,7 +6,7 @@ use crate::assert_sema;
 fn test_sema_1() {
     assert_sema!(
         r#"
-        break;
+        break
         "#
     )
 }
@@ -16,7 +16,7 @@ fn test_sema_1() {
 fn test_sema_2() {
     assert_sema!(
         r#"
-        continue;
+        continue
         "#
     )
 }
@@ -26,7 +26,7 @@ fn test_sema_2() {
 fn test_sema_3() {
     assert_sema!(
         r#"
-        return;
+        return
         "#
     )
 }
@@ -36,10 +36,10 @@ fn test_sema_3() {
 fn test_sema_4() {
     assert_sema!(
         r#"
-        fn outer() {
+        fun outer() {
             while true {
-                fn inner() {
-                    break;
+                fun inner() {
+                    break
                 }
             }
         }
@@ -52,10 +52,10 @@ fn test_sema_4() {
 fn test_sema_5() {
     assert_sema!(
         r#"
-        fn outer() {
+        fun outer() {
             while true {
-                fn inner() {
-                    continue;
+                fun inner() {
+                    continue
                 }
             }
         }

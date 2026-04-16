@@ -138,49 +138,49 @@ expression: result
     },
     Token {
         span: Span(
-            73..74,
+            73..75,
         ),
-        kind: Semi,
-        lexeme: ";",
+        kind: Walrus,
+        lexeme: ":=",
     },
     Token {
         span: Span(
-            75..76,
+            76..77,
         ),
         kind: Lparen,
         lexeme: "(",
     },
     Token {
         span: Span(
-            77..78,
+            78..79,
         ),
         kind: Rparen,
         lexeme: ")",
     },
     Token {
         span: Span(
-            79..80,
+            80..81,
         ),
         kind: Lbrace,
         lexeme: "{",
     },
     Token {
         span: Span(
-            81..82,
+            82..83,
         ),
         kind: Rbrace,
         lexeme: "}",
     },
     Token {
         span: Span(
-            83..84,
+            84..85,
         ),
         kind: Lbracket,
         lexeme: "[",
     },
     Token {
         span: Span(
-            85..86,
+            86..87,
         ),
         kind: Rbracket,
         lexeme: "]",

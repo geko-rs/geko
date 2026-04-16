@@ -7,7 +7,7 @@ sema::break_outside_loop
   x couldn't use `break` statement outside of loop.
    ,-[test.loom:2:9]
  1 | 
- 2 |         break;
+ 2 |         break
    :         ^^|^^
    :           `-- this `break` statement is invalid.
  3 |         

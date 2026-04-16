@@ -5,7 +5,7 @@ use crate::assert_eval;
 fn test_rt_hello_world() {
     assert_eval!(
         r#"
-        println("Hello, world!");
+        putln("Hello, world!")
         "#
     )
 }
@@ -14,14 +14,14 @@ fn test_rt_hello_world() {
 fn test_rt_for() {
     assert_eval!(
         r#"
-        let a = 3;
+        a := 3
         for i in 0..100 {
             if i == 10 {
-                break;
+                break
             }
-            a += i;
+            a += i
         }
-        println(str_of(a));
+        putln(str_of(a))
         "#
     )
 }

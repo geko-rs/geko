@@ -7,7 +7,7 @@ sema::continue_outside_loop
   x couldn't use `continue` statement outside of loop.
    ,-[test.loom:2:9]
  1 | 
- 2 |         continue;
+ 2 |         continue
    :         ^^^^|^^^
    :             `-- this `continue` statement is invalid.
  3 |         

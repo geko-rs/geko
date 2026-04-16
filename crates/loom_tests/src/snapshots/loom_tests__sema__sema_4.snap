@@ -6,10 +6,10 @@ sema::break_outside_loop
 
   x couldn't use `break` statement outside of loop.
    ,-[test.loom:5:21]
- 2 |         fn outer() {
+ 2 |         fun outer() {
  3 |             while true {
- 4 |                 fn inner() {
- 5 |                     break;
+ 4 |                 fun inner() {
+ 5 |                     break
    :                     ^^|^^
    :                       `-- this `break` statement is invalid.
  6 |                 }

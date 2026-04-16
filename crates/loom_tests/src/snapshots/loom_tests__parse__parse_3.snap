@@ -4,62 +4,63 @@ expression: result
 ---
 Block {
     span: Span(
-        9..93,
+        9..89,
     ),
     statements: [
-        Let {
+        Assign {
             span: Span(
-                9..92,
+                9..89,
             ),
             name: "value",
+            op: Define,
             value: Bin {
                 span: Span(
-                    21..92,
+                    18..89,
                 ),
                 op: Or,
                 lhs: Bin {
                     span: Span(
-                        21..76,
+                        18..73,
                     ),
                     op: And,
                     lhs: Bin {
                         span: Span(
-                            21..67,
+                            18..64,
                         ),
                         op: BitAnd,
                         lhs: Bin {
                             span: Span(
-                                21..59,
+                                18..56,
                             ),
                             op: Eq,
                             lhs: Bin {
                                 span: Span(
-                                    22..50,
+                                    19..47,
                                 ),
                                 op: Xor,
                                 lhs: Bin {
                                     span: Span(
-                                        23..44,
+                                        20..41,
                                     ),
                                     op: Mod,
                                     lhs: Bin {
                                         span: Span(
-                                            24..39,
+                                            21..36,
                                         ),
                                         op: Div,
                                         lhs: Bin {
                                             span: Span(
-                                                24..35,
+                                                21..32,
                                             ),
                                             op: Mul,
                                             lhs: Bin {
                                                 span: Span(
-                                                    25..30,
+                                                    22..27,
                                                 ),
                                                 op: Add,
                                                 lhs: Lit {
                                                     span: Span(
-                                                        25..26,
+                                                        22..23,
                                                     ),
                                                     lit: Number(
                                                         "2",
@@ -67,7 +68,7 @@ Block {
                                                 },
                                                 rhs: Lit {
                                                     span: Span(
-                                                        29..30,
+                                                        26..27,
                                                     ),
                                                     lit: Number(
                                                         "2",
@@ -76,7 +77,7 @@ Block {
                                             },
                                             rhs: Lit {
                                                 span: Span(
-                                                    34..35,
+                                                    31..32,
                                                 ),
                                                 lit: Number(
                                                     "2",
@@ -85,7 +86,7 @@ Block {
                                         },
                                         rhs: Lit {
                                             span: Span(
-                                                38..39,
+                                                35..36,
                                             ),
                                             lit: Number(
                                                 "2",
@@ -94,7 +95,7 @@ Block {
                                     },
                                     rhs: Lit {
                                         span: Span(
-                                            43..44,
+                                            40..41,
                                         ),
                                         lit: Number(
                                             "3",
@@ -103,7 +104,7 @@ Block {
                                 },
                                 rhs: Lit {
                                     span: Span(
-                                        48..50,
+                                        45..47,
                                     ),
                                     lit: Number(
                                         "65",
@@ -112,7 +113,7 @@ Block {
                             },
                             rhs: Lit {
                                 span: Span(
-                                    55..59,
+                                    52..56,
                                 ),
                                 lit: Bool(
                                     "true",
@@ -121,7 +122,7 @@ Block {
                         },
                         rhs: Lit {
                             span: Span(
-                                62..67,
+                                59..64,
                             ),
                             lit: Bool(
                                 "false",
@@ -130,7 +131,7 @@ Block {
                     },
                     rhs: Lit {
                         span: Span(
-                            71..76,
+                            68..73,
                         ),
                         lit: Bool(
                             "false",
@@ -139,12 +140,12 @@ Block {
                 },
                 rhs: Bin {
                     span: Span(
-                        80..92,
+                        77..89,
                     ),
                     op: BitAnd,
                     lhs: Lit {
                         span: Span(
-                            80..84,
+                            77..81,
                         ),
                         lit: Bool(
                             "true",
@@ -152,7 +153,7 @@ Block {
                     },
                     rhs: Lit {
                         span: Span(
-                            87..92,
+                            84..89,
                         ),
                         lit: Bool(
                             "false",

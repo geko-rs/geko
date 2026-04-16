@@ -5,8 +5,8 @@ use crate::assert_ast;
 fn test_parse_1() {
     assert_ast!(
         r#"
-        let id = value;
-        id = value;
+        id := value
+        id = value
         "#
     )
 }
@@ -15,13 +15,13 @@ fn test_parse_1() {
 fn test_parse_2() {
     assert_ast!(
         r#"
-        id += value;
-        id -= value;
-        id *= value;
-        id /= value;
-        id %= value;
-        id &= value;
-        id |= value;
+        id += value
+        id -= value
+        id *= value
+        id /= value
+        id %= value
+        id &= value
+        id |= value
         "#
     )
 }
@@ -30,7 +30,7 @@ fn test_parse_2() {
 fn test_parse_3() {
     assert_ast!(
         r#"
-        let value = ((((2 + 2) * 2 / 2) % 3) ^ 65) == true & false && false || true & false;
+        value := ((((2 + 2) * 2 / 2) % 3) ^ 65) == true & false && false || true & false
         "#
     )
 }
