@@ -5,6 +5,6 @@ edition = "2024"
 
 [dependencies]
 camino = "1.2.2"
-miette = { version = "7.6.0", features = ["fancy"] }
+miette = { git = "https://github.com/geko-rs/miette" }
 thiserror = "2.0.18"
 geko_common = { path = "../geko_common" }

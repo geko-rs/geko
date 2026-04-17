@@ -9,7 +9,7 @@ geko_lex = { path = "../geko_lex" }
 geko_parse = { path = "../geko_parse" }
 geko_ir = { path = "../geko_ir" }
 geko_sema = { path = "../geko_sema" }
-miette = { version = "7.6.0", features = ["fancy"] }
+miette = { git = "https://github.com/geko-rs/miette" }
 thiserror = "2.0.18"
 rand = "0.10.0"
 sysinfo = "0.38.3"

@@ -7,5 +7,5 @@ edition = "2024"
 camino = "1.2.2"
 geko_rt = { path = "../geko_rt" }
 geko_common = { path = "../geko_common" }
-miette = { version = "7.6.0", features = ["fancy"] }
+miette = { git = "https://github.com/geko-rs/miette", features = ["fancy"] }
 clap = { version = "4.5.59", features = ["derive"] }

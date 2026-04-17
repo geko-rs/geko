@@ -7,5 +7,5 @@ edition = "2024"
 geko_common = { path = "../geko_common" }
 geko_lex = { path = "../geko_lex" }
 geko_ir = { path = "../geko_ir" }
-miette = { version = "7.6.0", features = ["fancy"] }
+miette = { git = "https://github.com/geko-rs/miette" }
 thiserror = "2.0.18"

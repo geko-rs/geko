@@ -5,6 +5,6 @@ edition = "2024"
 
 [dependencies]
 geko_ir = { path = "../geko_ir" }
-miette = { version = "7.6.0", features = ["fancy"] }
+miette = { git = "https://github.com/geko-rs/miette" }
 thiserror = "2.0.18"
 geko_common = { path = "../geko_common" }

@@ -12,5 +12,5 @@ geko_parse = { path = "../geko_parse" }
 geko_sema = { path = "../geko_sema" }
 geko_ir = { path = "../geko_ir" }
 geko_rt = { path = "../geko_rt" }
-miette = { version = "7.6.0", features = ["fancy"] }
+miette = { git = "https://github.com/geko-rs/miette" }
 regex = "1.12.3"
