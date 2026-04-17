@@ -324,11 +324,11 @@ impl<'io> Interpreter<'io> {
         match container {
             // Module field assignment
             Value::Module(m) => m.borrow_mut().env.borrow_mut().set(span, name, value),
-            // Instance field assignment
+            // Instance field assignment if field exists
             Value::Instance(i) if i.borrow().fields.contains_key(name) => {
                 i.borrow_mut().fields.insert(name.to_string(), value);
             }
-            // Instance field assignment
+            // Instance field assignment if field doesn't exist
             Value::Instance(_) => {
                 bail!(RuntimeError::UndefinedField {
                     name: name.to_string(),
