@@ -79,7 +79,7 @@ sandwich.cook()
 - [x] rework anonymous functions syntax
 - [ ] implement `shuffle` for list
 - [x] `ok` and `error` builtins
-- [ ] `todo` keyword
+- [x] `todo` builtin
 - [x] implement anonymous functions
 - [x] extend for loop to iterate over items of list
 - [x] implement dictionaries
