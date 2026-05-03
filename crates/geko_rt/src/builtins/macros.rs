@@ -39,6 +39,15 @@ macro_rules! native_fun {
     };
     (
         arity = $arity:expr,
+        fun = |$rt:ident, _, _| $body:block
+    ) => {
+        Ref::new(Native {
+            arity: $arity,
+            function: Box::new(|$rt, _, _| $body),
+        })
+    };
+    (
+        arity = $arity:expr,
         fun = |_, _, $values:ident| $body:block
     ) => {
         Ref::new(Native {
@@ -53,6 +62,15 @@ macro_rules! native_fun {
         Ref::new(Native {
             arity: $arity,
             function: Box::new(|$rt, $span, $values| $body),
+        })
+    };
+    (
+        arity = $arity:expr,
+        fun = |$rt:ident, _, $values:ident| $body:block
+    ) => {
+        Ref::new(Native {
+            arity: $arity,
+            function: Box::new(|$rt, _, $values| $body),
         })
     };
 }

@@ -1,7 +1,9 @@
 /// Imports
 use crate::{
+    builtin_class,
     builtins::utils,
     interpreter::Interpreter,
+    native_class, native_method,
     refs::{MutRef, Ref},
     rt::value::{Class, Instance, Method, Native, Value},
 };
@@ -80,29 +82,25 @@ where
 /// Helper: makes new list
 pub fn make_list(rt: &mut Interpreter, span: &Span) -> MutRef<Instance> {
     // Getting builtin class
-    let class = utils::get_builtin(rt, "List");
+    let class = builtin_class!(rt, "List");
 
-    // Matching list value
-    match class {
-        // Calling class
-        Value::Class(class) => match rt.call_class(span, Vec::new(), class) {
-            Ok(Value::Instance(instance)) => instance,
-            Ok(_) => unreachable!(),
-            Err(err) => {
-                bug!(format!(
-                    "calling of builtin `List` has ended with a control flow leak: {err:?}"
-                ))
-            }
-        },
-        _ => bug!(format!("builtin `List` is not a class")),
+    // Calling class
+    match rt.call_class(span, Vec::new(), class) {
+        Ok(Value::Instance(instance)) => instance,
+        Ok(_) => unreachable!(),
+        Err(err) => {
+            bug!(format!(
+                "calling of builtin `List` has ended with a control flow leak: {err:?}"
+            ))
+        }
     }
 }
 
 /// Init method
 fn init_method() -> Method {
-    Method::Native(Ref::new(Native {
-        arity: 1,
-        function: Box::new(|_, _, values| {
+    native_method! {
+        arity = 1,
+        fun = |_, _, values| {
             let list = values.first().cloned().unwrap();
             match list {
                 Value::Instance(instance) => {
@@ -118,128 +116,128 @@ fn init_method() -> Method {
                 }
                 _ => unreachable!(),
             }
-        }),
-    }))
+        }
+    }
 }
 
 /// To string method
 fn to_string_method() -> Method {
-    Method::Native(Ref::new(Native {
-        arity: 1,
-        function: Box::new(|_, span, values| {
+    native_method! {
+        arity = 1,
+        fun = |_, span, values| {
             validate_list_arg(span, &values, |vec| Value::String(format!("{vec:?}")))
-        }),
-    }))
+        }
+    }
 }
 
 /// Push method
 fn push_method() -> Method {
-    Method::Native(Ref::new(Native {
-        arity: 2,
-        function: Box::new(|_, span, values| {
+    native_method! {
+        arity = 2,
+        fun = |_, span, values| {
             validate_list_arg(span, &values, |vec| {
                 vec.push(values.get(1).cloned().unwrap());
                 Value::Null
             })
-        }),
-    }))
+        }
+    }
 }
 
 /// Get method
 fn get_method() -> Method {
-    Method::Native(Ref::new(Native {
-        arity: 2,
-        function: Box::new(|_, span, values| {
+    native_method! {
+        arity = 2,
+        fun = |_, span, values| {
             validate_list_arg(span, &values, |vec| {
                 validate_idx_arg(span, &values, 1, vec.len(), |idx| vec[idx].clone())
             })
-        }),
-    }))
+        }
+    }
 }
 
 /// Set method
 fn set_method() -> Method {
-    Method::Native(Ref::new(Native {
-        arity: 3,
-        function: Box::new(|_, span, values| {
+    native_method! {
+        arity = 3,
+        fun = |_, span, values| {
             validate_list_arg(span, &values, |vec| {
                 validate_idx_arg(span, &values, 1, vec.len(), |idx| {
                     vec[idx] = values.get(2).cloned().unwrap();
                     Value::Null
                 })
             })
-        }),
-    }))
+        }
+    }
 }
 
 /// Insert method
 fn insert_method() -> Method {
-    Method::Native(Ref::new(Native {
-        arity: 3,
-        function: Box::new(|_, span, values| {
+    native_method! {
+        arity = 3,
+        fun = |_, span, values| {
             validate_list_arg(span, &values, |vec| {
                 validate_idx_arg(span, &values, 1, vec.len(), |idx| {
                     vec.insert(idx, values.get(2).cloned().unwrap());
                     Value::Null
                 })
             })
-        }),
-    }))
+        }
+    }
 }
 
 /// Remove method
 fn remove_method() -> Method {
-    Method::Native(Ref::new(Native {
-        arity: 2,
-        function: Box::new(|_, span, values| {
+    native_method! {
+        arity = 2,
+        fun = |_, span, values| {
             validate_list_arg(span, &values, |vec| {
                 validate_idx_arg(span, &values, 1, vec.len(), |idx| {
                     vec.remove(idx);
                     Value::Null
                 })
             })
-        }),
-    }))
+        }
+    }
 }
 
 /// Len method
 fn len_method() -> Method {
-    Method::Native(Ref::new(Native {
-        arity: 1,
-        function: Box::new(|_, span, values| {
+    native_method! {
+        arity = 1,
+        fun = |_, span, values| {
             validate_list_arg(span, &values, |vec| Value::Int(vec.len() as i64))
-        }),
-    }))
+        }
+    }
 }
 
 /// Clear method
 fn clear_method() -> Method {
-    Method::Native(Ref::new(Native {
-        arity: 1,
-        function: Box::new(|_, span, values| {
+    native_method! {
+        arity = 1,
+        fun = |_, span, values| {
             validate_list_arg(span, &values, |vec| {
                 vec.clear();
                 Value::Null
             })
-        }),
-    }))
+        }
+    }
 }
 
 /// Pop method
 fn pop_method() -> Method {
-    Method::Native(Ref::new(Native {
-        arity: 1,
-        function: Box::new(|_, span, values| {
+    native_method! {
+        arity = 1,
+        fun = |_, span, values| {
             validate_list_arg(span, &values, |vec| vec.pop().unwrap_or(Value::Null))
-        }),
-    }))
+        }
+    }
 }
 
 /// Index of method
 fn index_of_method() -> Method {
-    Method::Native(Ref::new(Native {
-        arity: 2,
-        function: Box::new(|_, span, values| {
+    native_method! {
+        arity = 2,
+        fun = |_, span, values| {
             validate_list_arg(span, &values, |vec| {
                 let value = values.get(1).cloned().unwrap();
                 vec.iter()
@@ -247,27 +245,27 @@ fn index_of_method() -> Method {
                     .map(|it| Value::Int(it as i64))
                     .unwrap_or(Value::Int(-1))
             })
-        }),
-    }))
+        }
+    }
 }
 
 /// Contains
 fn contains_method() -> Method {
-    Method::Native(Ref::new(Native {
-        arity: 2,
-        function: Box::new(|_, span, values| {
+    native_method! {
+        arity = 2,
+        fun = |_, span, values| {
             validate_list_arg(span, &values, |vec| {
                 Value::Bool(vec.contains(values.get(1).unwrap()))
             })
-        }),
-    }))
+        }
+    }
 }
 
 /// Choice method
 fn choice_method() -> Method {
-    Method::Native(Ref::new(Native {
-        arity: 1,
-        function: Box::new(|_, span, values| {
+    native_method! {
+        arity = 1,
+        fun = |_, span, values| {
             validate_list_arg(span, &values, |vec| {
                 match vec.get(rand::rng().random_range(0..vec.len())) {
                     Some(val) => val.clone(),
@@ -277,41 +275,28 @@ fn choice_method() -> Method {
                     ),
                 }
             })
-        }),
-    }))
+        }
+    }
 }
 
 /// Provides list class
 pub fn provide_class() -> Ref<Class> {
-    Ref::new(Class {
-        name: "List".to_string(),
-        methods: HashMap::from([
-            // Init method
-            ("init".to_string(), init_method()),
-            // To string method
-            ("to_string".to_string(), to_string_method()),
-            // Push method
-            ("push".to_string(), push_method()),
-            // Get method
-            ("get".to_string(), get_method()),
-            // Set method
-            ("set".to_string(), set_method()),
-            // Insert method
-            ("insert".to_string(), insert_method()),
-            // Remove method
-            ("remove".to_string(), remove_method()),
-            // Len method
-            ("len".to_string(), len_method()),
-            // Clear method
-            ("clear".to_string(), clear_method()),
-            // Pop method
-            ("pop".to_string(), pop_method()),
-            // Index of method
-            ("index_of".to_string(), index_of_method()),
-            // Contains method
-            ("contains".to_string(), contains_method()),
-            // Choice method
-            ("choice".to_string(), choice_method()),
-        ]),
-    })
+    native_class! {
+        name = List,
+        methods = {
+            init => init_method(),
+            to_string => to_string_method(),
+            push => push_method(),
+            get => get_method(),
+            set => set_method(),
+            insert => insert_method(),
+            remove => remove_method(),
+            len => len_method(),
+            clear => clear_method(),
+            pop => pop_method(),
+            index_of => index_of_method(),
+            contains => contains_method(),
+            choice => choice_method()
+        }
+    }
 }

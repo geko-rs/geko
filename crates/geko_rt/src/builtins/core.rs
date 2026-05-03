@@ -5,114 +5,118 @@ use crate::{
         result::{self, make_result},
         utils,
     },
+    callable, class,
     errors::RuntimeError,
+    native_fun, realm,
     refs::{RealmRef, Ref},
     rt::{
         realm::Realm,
-        value::{Callable, Native, Value},
+        value::{Native, Value},
     },
 };
 use geko_common::{bail, bug};
-use std::{cell::RefCell, collections::HashMap, rc::Rc};
+use std::{collections::HashMap, rc::Rc};
 
 /// Put definition
 pub fn put() -> Ref<Native> {
-    Ref::new(Native {
-        arity: 1,
-        function: Box::new(|rt, _, values| {
+    native_fun! {
+        arity = 1,
+        fun = |rt, _, values| {
             rt.io.output(&values.first().unwrap().to_string());
             rt.io.flush();
             Value::Null
-        }),
-    })
+        }
+    }
 }
 
 /// Putln definition
 pub fn putln() -> Ref<Native> {
-    Ref::new(Native {
-        arity: 1,
-        function: Box::new(|rt, _, values| {
+    native_fun! {
+        arity = 1,
+        fun = |rt, _, values| {
             rt.io.output(&format!("{}\n", values.first().unwrap()));
             rt.io.flush();
             Value::Null
-        }),
-    })
+        }
+    }
 }
 
 /// Readln definition
 pub fn readln() -> Ref<Native> {
-    Ref::new(Native {
-        arity: 0,
-        function: Box::new(|rt, _, _| Value::String(rt.io.input())),
-    })
+    native_fun! {
+        arity = 0,
+        fun = |rt, _, _| {
+            Value::String(rt.io.input())
+        }
+    }
 }
 
 /// String of definition
 pub fn str_of() -> Ref<Native> {
-    Ref::new(Native {
-        arity: 1,
-        function: Box::new(|_, _, values| {
+    native_fun! {
+        arity = 1,
+        fun = |_, _, values| {
             Value::String(values.first().cloned().unwrap().to_string())
-        }),
-    })
+        }
+    }
 }
 
 /// Ok definition
 pub fn ok() -> Ref<Native> {
-    Ref::new(Native {
-        arity: 1,
-        function: Box::new(|rt, span, values| {
+    native_fun! {
+        arity = 1,
+        fun = |rt, span, values| {
             let value = values.first().cloned().unwrap();
             Value::Instance(make_result(rt, span, value, true))
-        }),
-    })
+        }
+    }
 }
 
 /// Error definition
 pub fn error() -> Ref<Native> {
-    Ref::new(Native {
-        arity: 1,
-        function: Box::new(|rt, span, values| {
+    native_fun! {
+        arity = 1,
+        fun = |rt, span, values| {
             let value = values.first().cloned().unwrap();
             Value::Instance(make_result(rt, span, value, false))
-        }),
-    })
+        }
+    }
 }
 
 /// Bail definition
 pub fn bail() -> Ref<Native> {
-    Ref::new(Native {
-        arity: 1,
-        function: Box::new(|_, span, values| {
+    native_fun! {
+        arity = 1,
+        fun = |_, span, values| {
             let text = values.first().cloned().unwrap();
             bail!(RuntimeError::Bail {
                 text: format!("{text}"),
                 src: span.0.clone(),
                 span: span.1.clone().into()
             })
-        }),
-    })
+        }
+    }
 }
 
 /// Todo definition
 pub fn todo() -> Ref<Native> {
-    Ref::new(Native {
-        arity: 0,
-        function: Box::new(|_, span, _| {
+    native_fun! {
+        arity = 0,
+        fun = |_, span, _| {
             bail!(RuntimeError::Bail {
                 text: "found todo".to_string(),
                 src: span.0.clone(),
                 span: span.1.clone().into()
             })
-        }),
-    })
+        }
+    }
 }
 
 /// Length of string or list
 pub fn len_of() -> Ref<Native> {
-    Ref::new(Native {
-        arity: 1,
-        function: Box::new(|rt, span, values| {
+    native_fun! {
+        arity = 1,
+        fun = |rt, span, values| {
             // Matching value to find out way how to get length
             match values.first().cloned().unwrap() {
                 // If string, retrieving it's len
@@ -182,26 +186,24 @@ pub fn len_of() -> Ref<Native> {
                 // Anything else => error
                 other => utils::error(span, &format!("couldn't get len of `{:?}`", other)),
             }
-        }),
-    })
+        }
+    }
 }
 
 /// Provides `core` realm
 pub fn provide_env() -> RealmRef {
-    let mut realm = Realm::default();
-
-    realm.define("put", Value::Callable(Callable::Native(put())));
-    realm.define("putln", Value::Callable(Callable::Native(putln())));
-    realm.define("readln", Value::Callable(Callable::Native(readln())));
-    realm.define("str_of", Value::Callable(Callable::Native(str_of())));
-    realm.define("len_of", Value::Callable(Callable::Native(len_of())));
-    realm.define("ok", Value::Callable(Callable::Native(ok())));
-    realm.define("error", Value::Callable(Callable::Native(error())));
-    realm.define("bail", Value::Callable(Callable::Native(bail())));
-    realm.define("todo", Value::Callable(Callable::Native(todo())));
-    realm.define("List", Value::Class(list::provide_class()));
-    realm.define("Dict", Value::Class(dict::provide_class()));
-    realm.define("Result", Value::Class(result::provide_class()));
-
-    Rc::new(RefCell::new(realm))
+    realm! {
+        put => callable!(put()),
+        putln => callable!(putln()),
+        readln => callable!(readln()),
+        str_of => callable!(str_of()),
+        len_of => callable!(len_of()),
+        ok => callable!(ok()),
+        error => callable!(error()),
+        bail => callable!(bail()),
+        todo => callable!(todo()),
+        List => class!(list::provide_class()),
+        Dict => class!(dict::provide_class()),
+        Result => class!(result::provide_class())
+    }
 }

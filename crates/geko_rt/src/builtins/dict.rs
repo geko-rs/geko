@@ -1,7 +1,9 @@
 /// Imports
 use crate::{
+    builtin_class,
     builtins::{list::make_list, utils},
     interpreter::Interpreter,
+    native_class, native_method,
     refs::{MutRef, Ref},
     rt::value::{Class, Instance, Method, Native, Value},
 };
@@ -50,28 +52,25 @@ where
 #[allow(dead_code)]
 pub fn make_dict(rt: &mut Interpreter, span: &Span) -> MutRef<Instance> {
     // Getting builtin class
-    let class = utils::get_builtin(rt, "Dict");
+    let class = builtin_class!(rt, "Dict");
 
     // Calling class
-    match class {
-        Value::Class(class) => match rt.call_class(span, Vec::new(), class) {
-            Ok(Value::Instance(instance)) => instance,
-            Ok(_) => unreachable!(),
-            Err(err) => {
-                bug!(format!(
-                    "calling of builtin `Dict` has ended with a control flow leak: {err:?}"
-                ))
-            }
-        },
-        _ => bug!(format!("builtin `Dict` is not a class")),
+    match rt.call_class(span, Vec::new(), class) {
+        Ok(Value::Instance(instance)) => instance,
+        Ok(_) => unreachable!(),
+        Err(err) => {
+            bug!(format!(
+                "calling of builtin `Dict` has ended with a control flow leak: {err:?}"
+            ))
+        }
     }
 }
 
 /// Init method
 fn init_method() -> Method {
-    Method::Native(Ref::new(Native {
-        arity: 1,
-        function: Box::new(|_, _, values| {
+    native_method! {
+        arity = 1,
+        fun = |_, _, values| {
             let dict = values.first().cloned().unwrap();
             match dict {
                 Value::Instance(instance) => {
@@ -87,39 +86,39 @@ fn init_method() -> Method {
                 }
                 _ => unreachable!(),
             }
-        }),
-    }))
+        }
+    }
 }
 
 /// To string method
 fn to_string_method() -> Method {
-    Method::Native(Ref::new(Native {
-        arity: 1,
-        function: Box::new(|_, span, values| {
+    native_method! {
+        arity = 1,
+        fun = |_, span, values| {
             validate_dict_arg(span, &values, |map| Value::String(format!("{map:?}")))
-        }),
-    }))
+        }
+    }
 }
 
 /// Get method
 fn get_method() -> Method {
-    Method::Native(Ref::new(Native {
-        arity: 2,
-        function: Box::new(|_, span, values| {
+    native_method! {
+        arity = 2,
+        fun = |_, span, values| {
             validate_dict_arg(span, &values, |map| {
                 map.get(&values.get(1).cloned().unwrap())
                     .cloned()
                     .unwrap_or(Value::Null)
             })
-        }),
-    }))
+        }
+    }
 }
 
 /// Insert method
 fn insert_method() -> Method {
-    Method::Native(Ref::new(Native {
-        arity: 3,
-        function: Box::new(|_, span, values| {
+    native_method! {
+        arity = 3,
+        fun = |_, span, values| {
             validate_dict_arg(span, &values, |map| {
                 map.insert(
                     values.get(1).cloned().unwrap(),
@@ -127,63 +126,63 @@ fn insert_method() -> Method {
                 );
                 Value::Null
             })
-        }),
-    }))
+        }
+    }
 }
 
 /// Remove method
 fn remove_method() -> Method {
-    Method::Native(Ref::new(Native {
-        arity: 2,
-        function: Box::new(|_, span, values| {
+    native_method! {
+        arity = 2,
+        fun = |_, span, values| {
             validate_dict_arg(span, &values, |map| {
                 map.remove(&values.first().cloned().unwrap());
                 Value::Null
             })
-        }),
-    }))
+        }
+    }
 }
 
 /// Len method
 fn len_method() -> Method {
-    Method::Native(Ref::new(Native {
-        arity: 1,
-        function: Box::new(|_, span, values| {
+    native_method! {
+        arity = 1,
+        fun = |_, span, values| {
             validate_dict_arg(span, &values, |map| Value::Int(map.len() as i64))
-        }),
-    }))
+        }
+    }
 }
 
 /// Clear method
 fn clear_method() -> Method {
-    Method::Native(Ref::new(Native {
-        arity: 1,
-        function: Box::new(|_, span, values| {
+    native_method! {
+        arity = 1,
+        fun = |_, span, values| {
             validate_dict_arg(span, &values, |map| {
                 map.clear();
                 Value::Null
             })
-        }),
-    }))
+        }
+    }
 }
 
 /// Contains key
 fn contains_key_method() -> Method {
-    Method::Native(Ref::new(Native {
-        arity: 2,
-        function: Box::new(|_, span, values| {
+    native_method! {
+        arity = 2,
+        fun = |_, span, values| {
             validate_dict_arg(span, &values, |map| {
                 Value::Bool(map.contains_key(values.get(1).unwrap()))
             })
-        }),
-    }))
+        }
+    }
 }
 
 /// Keys list
 fn keys_method() -> Method {
-    Method::Native(Ref::new(Native {
-        arity: 1,
-        function: Box::new(|rt, span, values| {
+    native_method! {
+        arity = 1,
+        fun = |rt, span, values| {
             validate_dict_arg(span, &values, |map| {
                 // Preparing keys vector
                 let keys = map.keys().cloned().collect::<Vec<Value>>();
@@ -199,15 +198,15 @@ fn keys_method() -> Method {
 
                 Value::Instance(list)
             })
-        }),
-    }))
+        }
+    }
 }
 
 /// Values list
 fn values_method() -> Method {
-    Method::Native(Ref::new(Native {
-        arity: 1,
-        function: Box::new(|rt, span, values| {
+    native_method! {
+        arity = 1,
+        fun = |rt, span, values| {
             validate_dict_arg(span, &values, |map| {
                 // Preparing values vector
                 let values = map.keys().cloned().collect::<Vec<Value>>();
@@ -223,35 +222,25 @@ fn values_method() -> Method {
 
                 Value::Instance(list)
             })
-        }),
-    }))
+        }
+    }
 }
 
 /// Provides dict class
 pub fn provide_class() -> Ref<Class> {
-    Ref::new(Class {
-        name: "Dict".to_string(),
-        methods: HashMap::from([
-            // Init method
-            ("init".to_string(), init_method()),
-            // To string method
-            ("to_string".to_string(), to_string_method()),
-            // Get method
-            ("get".to_string(), get_method()),
-            // Insert method
-            ("insert".to_string(), insert_method()),
-            // Remove method
-            ("remove".to_string(), remove_method()),
-            // Len method
-            ("len".to_string(), len_method()),
-            // Clear method
-            ("clear".to_string(), clear_method()),
-            // Contains method
-            ("contains_key".to_string(), contains_key_method()),
-            // Keys method
-            ("keys".to_string(), keys_method()),
-            // Values method
-            ("values".to_string(), values_method()),
-        ]),
-    })
+    native_class! {
+        name = Dict,
+        methods = {
+            init => init_method(),
+            to_string => to_string_method(),
+            get => get_method(),
+            insert => insert_method(),
+            remove => remove_method(),
+            len => len_method(),
+            clear => clear_method(),
+            contains_key => contains_key_method(),
+            keys => keys_method(),
+            values => values_method()
+        }
+    }
 }
